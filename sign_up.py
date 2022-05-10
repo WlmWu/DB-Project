@@ -152,5 +152,5 @@ else:
 
 db.close()
 
-print("<h1>done</h1>")
+# print("<h1>done</h1>")
 
