@@ -38,7 +38,6 @@ pwd = form.getvalue('password')
 re_pwd = form.getvalue('re-password')
 lat = form.getvalue('latitude')
 lon = form.getvalue('longitude')
-# print("hi")
 
 try:
     if name==None:
