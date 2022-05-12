@@ -1,14 +1,8 @@
 <?php
-// echo $_REQUEST['account'];
 session_start();
-// if(!isset($_SESSION['account'])){
-    
-    $_SESSION['account']=$_REQUEST["account"];
-    $_SESSION['Authenticated']=True;
-//  }
-// echo $_SESSION['account'];
+$_SESSION['account']=$_REQUEST["account"];
+$_SESSION['Authenticated']=True;
 $acnt=$_SESSION["account"];
-// $acnt=$_REQUEST["account"];
 
 ?>
 
