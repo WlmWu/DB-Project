@@ -1,9 +1,10 @@
 <?php
 session_start();
-$_SESSION['account']=$_REQUEST["account"];
-$_SESSION['Authenticated']=True;
+if(!isset($_SESSION['account'])){
+    $_SESSION['account']=$_REQUEST["account"];
+    $_SESSION['Authenticated']=True;
+}
 $acnt=$_SESSION["account"];
-
 ?>
 
 <?php
@@ -50,6 +51,32 @@ $lat=$_SESSION["latitude"];
 // $pho=$data["phone"];
 // $lon=$data["longitude"];
 // $lat=$data["latitude"];
+
+?>
+
+<?php 
+
+// search stores
+$srhShop=array();
+$srhShopId=array();
+
+foreach($_REQUEST['srhShopId'] as $s){
+    array_push($srhShopId,$s);
+}
+// $srhShop[SID]['name' or 'categ']
+for($i=0;$i<count($srhShopId);$i++){
+    $tmp['tmp']=array(
+        'name'=>$_REQUEST['srhShopName'][$i],
+        'categ'=>$_REQUEST['srhShopCat'][$i]
+    );
+    $srhShop[$srhShopId[$i]] = $tmp['tmp'];
+}
+$shopDis=$_REQUEST['shopDis'];
+
+// foreach($srhShop as $shop){
+//     echo 'shop: '.$shop['name'].'<br>';
+// }
+// echo count($srhShop);
 
 ?>
 
@@ -171,7 +198,7 @@ $lat=$_SESSION["latitude"];
              -->
         <h3>Search</h3>
         <div class=" row  col-xs-8">
-          <form class="form-horizontal" action="sign_up.php" method="post">
+          <form class="form-horizontal" action="search.py" method="post">
             <div class="form-group">
               <label class="control-label col-sm-1" for="Shop">Shop</label>
               <div class="col-sm-5">
@@ -226,6 +253,10 @@ $lat=$_SESSION["latitude"];
                
                   </datalist>
                 </div>
+                <?php
+                    echo "<input type='hidden' name='longitude' value='".$lon."'>";
+                    echo "<input type='hidden' name='latitude' value='".$lat."'>";
+                ?>
                 <button type="submit" style="margin-left: 18px;"class="btn btn-primary">Search</button>
               
             </div>
@@ -245,7 +276,7 @@ $lat=$_SESSION["latitude"];
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <!-- <tr>
                   
                   <th scope="row">1</th>
                
@@ -255,30 +286,43 @@ $lat=$_SESSION["latitude"];
                   <td>near </td>
                   <td>  <button type="button" class="btn btn-info " data-toggle="modal" data-target="#macdonald">Open menu</button></td>
                 
-                </tr>
+                </tr> -->
                 <?php
-                    try{
-                        $sql = "SELECT * FROM store WHERE category= $category";
-                        $sql = "SELECT * FROM store";
-                        $stmt=$conn->prepare($sql);
-                        $stmt->execute();
-                        $chk = $stmt->setFetchMode(PDO::FETCH_ASSOC);
-                        $i=0;
-                        while(!empty($row=$stmt->fetch())){
-                            $i++;
-                            echo "<tr>";
-                            echo "<th scope='row'>".$i."</th>";
-                            echo "<td>".$row["name"]."</td>";
-                            echo "<td>".$row["category"]."</td>";
-                            echo "<td>near </td>";
-                            echo "<td>  <button type='button' class='btn btn-info '>Open menu</button></td>";
-                            echo "<br>";
-                            echo "</tr>";
-                        }
-                        
-                    }catch(PDOException $e){
-                        echo 'Error';
+                    $rowCnt=0;
+                    foreach($srhShop as $shop){
+                        $rowCnt++;
+                        echo "<tr>";
+                        echo "<th scope='row'>".$rowCnt."</th>";
+                        echo "<td>".$shop["name"]."</td>";
+                        echo "<td>".$shop["categ"]."</td>";
+                        echo "<td>".$shopDis."</td>";
+                        echo "<td>  <button type='button' class='btn btn-info '>Open menu</button></td>";
+                        echo "<br>";
+                        echo "</tr>";
                     }
+
+                    // try{
+                    //     $sql = "SELECT * FROM store WHERE category= $category";
+                    //     $sql = "SELECT * FROM store";
+                    //     $stmt=$conn->prepare($sql);
+                    //     $stmt->execute();
+                    //     $chk = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+                    //     $i=0;
+                    //     while(!empty($row=$stmt->fetch())){
+                    //         $i++;
+                    //         echo "<tr>";
+                    //         echo "<th scope='row'>".$i."</th>";
+                    //         echo "<td>".$row["name"]."</td>";
+                    //         echo "<td>".$row["category"]."</td>";
+                    //         echo "<td>near </td>";
+                    //         echo "<td>  <button type='button' class='btn btn-info '>Open menu</button></td>";
+                    //         echo "<br>";
+                    //         echo "</tr>";
+                    //     }
+                        
+                    // }catch(PDOException $e){
+                    //     echo 'Error';
+                    // }
                 ?>
                 
            
