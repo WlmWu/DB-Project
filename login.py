@@ -23,7 +23,7 @@ def connectDb(dbName):
 
 
 def popWindow(msg,is_succ):
-    addr='nav.html' if is_succ else 'index.html'
+    addr='nav.php' if is_succ else 'index.html'
     print("<script>")
     print('window.location.href="%s";'%addr)
     print('window.alert("%s")'%msg)
