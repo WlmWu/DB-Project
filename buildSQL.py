@@ -32,7 +32,7 @@ if "__main__":
         location geometry NOT NULL
     );
     """
-    # cursor.execute(sql)
+    cursor.execute(sql)
 
 
     sql="""
