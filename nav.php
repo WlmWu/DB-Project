@@ -1,11 +1,12 @@
 <?php
-
+// echo $_REQUEST['account'];
 session_start();
-if(!isset($_SESSION['account'])){
+// if(!isset($_SESSION['account'])){
+    
     $_SESSION['account']=$_REQUEST["account"];
     $_SESSION['Authenticated']=True;
- }
-
+//  }
+// echo $_SESSION['account'];
 $acnt=$_SESSION["account"];
 // $acnt=$_REQUEST["account"];
 
@@ -33,7 +34,7 @@ if(isset($_REQUEST["edLat"]) && isset($_REQUEST["edLon"])){
 }
 
 // get params
-$sql = "SELECT * ,ST_AsText(location) AS txtLoc FROM user WHERE account= $acnt";
+$sql = "SELECT * ,ST_AsText(location) AS txtLoc FROM user WHERE account= '$acnt'";
 $stmt=$conn->prepare($sql);
 $stmt->execute();
 $data=$stmt->fetch();
@@ -186,7 +187,7 @@ $lat=$_SESSION["latitude"];
               <div class="col-sm-5">
 
 
-                <select class="form-control" id="sel1">
+                <select class="form-control" id="sel1" name="dist">
                   <option>near</option>
                   <option>medium </option>
                   <option>far</option>
@@ -201,18 +202,18 @@ $lat=$_SESSION["latitude"];
               <label class="control-label col-sm-1" for="Price">Price</label>
               <div class="col-sm-2">
 
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" name="PriLow">
 
               </div>
               <label class="control-label col-sm-1" for="~">~</label>
               <div class="col-sm-2">
 
-                <input type="text" class="form-control">
+                <input type="text" class="form-control" name="PriHigh"> 
 
               </div>
               <label class="control-label col-sm-1" for="Meal">Meal</label>
               <div class="col-sm-5">
-                <input type="text" list="Meals" class="form-control" id="Meal" placeholder="Enter Meal">
+                <input type="text" list="Meals" class="form-control" id="Meal" placeholder="Enter Meal" name="Meal">
                 <datalist id="Meals">
                   <option value="Hamburger">
                   <option value="coffee">
@@ -225,7 +226,7 @@ $lat=$_SESSION["latitude"];
             
               
                 <div class="col-sm-5">
-                  <input type="text" list="categorys" class="form-control" id="category" placeholder="Enter shop category">
+                  <input type="text" list="categorys" class="form-control" id="category" placeholder="Enter shop category" name="categ">
                   <datalist id="categorys">
                     <option value="fast food">
                

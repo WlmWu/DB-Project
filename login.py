@@ -8,9 +8,6 @@ import re
 import pymysql
 import logging
 from hashlib import sha256
-import requests
-import urllib
-import urllib.request as urllib2
 
 def connectDb(dbName):
     try:
@@ -36,7 +33,7 @@ def popWindow(msg,is_succ):
 form = cgi.FieldStorage() 
 acnt = form.getvalue('Account')
 pwd = form.getvalue('password')
-
+# print("acnt:",acnt)
 
 try:
     if acnt==None:
@@ -105,7 +102,7 @@ else:
         print('<form action="%s" method="post">'%addr)
         for k,v in userdata.items():
             # print(k,v,'<br>')
-            print(f'<input type="hidden" name={k} value={v}>')
+            print(f"<input type='hidden' name='{k}' value='{v}'>")
         print('</form>')
         print("<script>")
         print("document.getElementsByTagName('form')[0].submit()")
