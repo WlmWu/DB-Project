@@ -24,7 +24,7 @@ if "__main__":
 
     sql = """
     CREATE TABLE user (
-        ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        UID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         account text(20),
         password varchar(64),
         name varchar(20),
@@ -32,27 +32,34 @@ if "__main__":
         location geometry NOT NULL
     );
     """
-    cursor.execute(sql)
+    # cursor.execute(sql)
 
 
     sql="""
     CREATE TABLE store (
-        ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        SID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        UID int,
         name varchar(20),
         category varchar(20),
-        location geometry NOT NULL
+        location geometry NOT NULL,
+        FOREIGN KEY (UID) REFERENCES user(UID) 
     );
     """
     cursor.execute(sql)
 
 
-    # sql="""
-    # CREATE TABLE product (
-    #     ID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        
-    # );
-    # """
-    # cursor.execute(sql)
+    sql="""
+    CREATE TABLE product (
+        PID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        SID int,
+        name varchar(20),
+        picture varchar(50),
+        price decimal,
+        quantity int,
+        FOREIGN KEY (SID) REFERENCES store(SID) 
+    );
+    """
+    cursor.execute(sql)
 
 
     db.commit()
