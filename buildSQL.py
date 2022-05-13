@@ -26,12 +26,12 @@ if "__main__":
     sql = """
     CREATE TABLE user (
         UID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        role boolean,
         account text(20),
         password varchar(64),
         name varchar(20),
         phone varchar(10),
-        location geometry NOT NULL
+        location geometry NOT NULL,
+        role boolean
     );
     """
     cursor.execute(sql)
