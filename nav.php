@@ -37,6 +37,13 @@ $stmt->execute();
 $data=$stmt->fetch();
 $_SESSION['name']=$data["name"];
 $_SESSION['phone']=$data["phone"];
+$_SESSION['UID']=$$data["UID"];
+if ($data["role"]){
+    $_SESSION['role']=1;
+}
+else{
+    $_SESSION['role']=0;
+}
 
 $pattern = "/[0-9]+[.]*[0-9]{0,6} [0-9]+[.]*[0-9]{0,6}/";
 preg_match($pattern, $data["txtLoc"], $mth);
@@ -44,11 +51,12 @@ $location = explode(' ', $mth[0]);
 $_SESSION['longitude']=$location[0];
 $_SESSION['latitude']=$location[1];
 
+$uid=$_SESSION["UID"];
 $name=$_SESSION["name"];
 $pho=$_SESSION["phone"];
 $lon=$_SESSION["longitude"];
 $lat=$_SESSION["latitude"];
-
+$role=$_SESSION["role"];
 // $name=$data["name"];
 // $pho=$data["phone"];
 // $lon=$data["longitude"];
@@ -126,7 +134,7 @@ for($i=0;$i<count($srhShopId);$i++){
         <h3>Profile</h3>
         <div class="row">
           <div class="col-xs-12">
-            Account: <?php echo $acnt; ?>, Name: <?php echo $name; ?> , User, PhoneNumber: <?php echo $pho; ?>,  location: <?php echo $lon; ?>, <?php echo $lat; ?>
+            Account: <?php echo $acnt; ?>, Name: <?php echo $name; ?> , <?php if (!$role){echo 'User';}else{echo 'Mananger';}?>, PhoneNumber: <?php echo $pho; ?>,  location: <?php echo $lon; ?>, <?php echo $lat; ?>
             
             <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
             data-target="#location">edit location</button>
@@ -490,6 +498,7 @@ foreach($srhShop as $shop){
 
         <h3> Start a business </h3>
         <div class="form-group ">
+        <input type='hidden' name='UID' value=<?php "'".$uid."'"?>>
           <div class="row">
             <div class="col-xs-2">
               <label for="ex5">shop name</label>
@@ -517,6 +526,7 @@ foreach($srhShop as $shop){
             <button type="button" class="btn btn-primary"  >register</button>
           </div>
         </div>
+        
         <hr>
         <h3>ADD</h3>
 
