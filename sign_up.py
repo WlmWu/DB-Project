@@ -39,6 +39,8 @@ re_pwd = form.getvalue('re-password')
 lat = form.getvalue('latitude')
 lon = form.getvalue('longitude')
 
+valid=0
+
 try:
     if name==None:
         assert False, 'Name is empty.'
@@ -58,7 +60,6 @@ except AssertionError as msg:
     popWindow(msg,0)
 
 # print("<h1>none empty</h1>")
-valid=0
 
 try:
     parser=re.compile("[ ]*([A-Za-z0-9]*)[ ]*")

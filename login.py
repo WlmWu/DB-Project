@@ -35,6 +35,8 @@ acnt = form.getvalue('Account')
 pwd = form.getvalue('password')
 # print("acnt:",acnt)
 
+valid=0
+
 try:
     if acnt==None:
         assert False, 'Account is empty.'
@@ -59,53 +61,54 @@ try:
         pwd=match.group(0)
     else:
         assert False, 'Password contains English alphabets and numbers only.'
-    
+    valid=1
 except AssertionError as msg:
     popWindow(msg,0)
 
-pwd=sha256(pwd.encode('utf-8')).hexdigest()
+if valid:
+    pwd=sha256(pwd.encode('utf-8')).hexdigest()
 
-db=connectDb('test') 
-if db is None:
-    print('error')
-    exit(0)
+    db=connectDb('test') 
+    if db is None:
+        print('error')
+        exit(0)
 
-cursor=db.cursor()
-sql="""
-    select *
-    from user
-    where account='%s'
-    """%(acnt)
+    cursor=db.cursor()
+    sql="""
+        select *
+        from user
+        where account='%s'
+        """%(acnt)
 
-cursor.execute(sql)
-rlt = cursor.fetchone()
+    cursor.execute(sql)
+    rlt = cursor.fetchone()
 
 
-if rlt==None:
-    msg="Account hasn't been registered."
-    popWindow(msg,0)
-else:
-    fthAcnt=rlt[1]
-    fthPwd=rlt[2]
-    # fthName=rlt[3]
-    # fthPho=rlt[4]
-    # fthLon=rlt[5]
-    # fthLat=rlt[6]
-    if fthPwd!=pwd:
-        msg="Incorrect password"
+    if rlt==None:
+        msg="Account hasn't been registered."
         popWindow(msg,0)
     else:
-        # print('Login success')
-        # userdata = {"account": fthAcnt, "password": fthPwd, "name": fthName, "phone":fthPho, "longitude":fthLon, "latitude":fthLat}
-        userdata={"account":fthAcnt}
-        addr='nav.php'
-        print('<form action="%s" method="post">'%addr)
-        for k,v in userdata.items():
-            # print(k,v,'<br>')
-            print(f"<input type='hidden' name='{k}' value='{v}'>")
-        print('</form>')
-        print("<script>")
-        print("document.getElementsByTagName('form')[0].submit()")
-        print("</script>")
-        
-db.close()
+        fthAcnt=rlt[1]
+        fthPwd=rlt[2]
+        # fthName=rlt[3]
+        # fthPho=rlt[4]
+        # fthLon=rlt[5]
+        # fthLat=rlt[6]
+        if fthPwd!=pwd:
+            msg="Incorrect password"
+            popWindow(msg,0)
+        else:
+            # print('Login success')
+            # userdata = {"account": fthAcnt, "password": fthPwd, "name": fthName, "phone":fthPho, "longitude":fthLon, "latitude":fthLat}
+            userdata={"account":fthAcnt}
+            addr='nav.php'
+            print('<form action="%s" method="post">'%addr)
+            for k,v in userdata.items():
+                # print(k,v,'<br>')
+                print(f"<input type='hidden' name='{k}' value='{v}'>")
+            print('</form>')
+            print("<script>")
+            print("document.getElementsByTagName('form')[0].submit()")
+            print("</script>")
+            
+    db.close()
