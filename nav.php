@@ -23,9 +23,11 @@ try {
 
 // check new location
 if(isset($_REQUEST["edLat"]) && isset($_REQUEST["edLon"])){
-    $sql = "UPDATE user SET location=ST_GeomFromText('POINT(".$_REQUEST['edLon'].' '.$_REQUEST['edLat'].")') WHERE account='$acnt'";
-    $stmt=$conn->prepare($sql);
-    $stmt->execute();
+    if($_REQUEST["edLon"]<=180 && $_REQUEST["edLon"]>=-180 && $_REQUEST["edLat"]<=90 && $_REQUEST["edLat"]>=-90){
+        $sql = "UPDATE user SET location=ST_GeomFromText('POINT(".$_REQUEST['edLon'].' '.$_REQUEST['edLat'].")') WHERE account='$acnt'";
+        $stmt=$conn->prepare($sql);
+        $stmt->execute();
+    }
 }
 
 // get params
@@ -66,12 +68,13 @@ foreach($_REQUEST['srhShopId'] as $s){
 // $srhShop[SID]['name' or 'categ']
 for($i=0;$i<count($srhShopId);$i++){
     $tmp['tmp']=array(
+        'SID'=>$_REQUEST['srhShopId'][$i],
         'name'=>$_REQUEST['srhShopName'][$i],
-        'categ'=>$_REQUEST['srhShopCat'][$i]
+        'categ'=>$_REQUEST['srhShopCat'][$i],
+        'dis'=>$_REQUEST['srhShopDis'][$i]
     );
     $srhShop[$srhShopId[$i]] = $tmp['tmp'];
 }
-$shopDis=$_REQUEST['shopDis'];
 
 // foreach($srhShop as $shop){
 //     echo 'shop: '.$shop['name'].'<br>';
@@ -278,7 +281,7 @@ $shopDis=$_REQUEST['shopDis'];
               <tbody>
                 <!-- <tr>
                   
-                  <th scope="row">1</th>
+                  <th scope="row">-1</th>
                
                   <td>macdonald</td>
                   <td>fast food</td>
@@ -295,34 +298,12 @@ $shopDis=$_REQUEST['shopDis'];
                         echo "<th scope='row'>".$rowCnt."</th>";
                         echo "<td>".$shop["name"]."</td>";
                         echo "<td>".$shop["categ"]."</td>";
-                        echo "<td>".$shopDis."</td>";
-                        echo "<td>  <button type='button' class='btn btn-info '>Open menu</button></td>";
+                        echo "<td>".$shop["dis"]."</td>";
+                        echo "<td>  <button type='button' class='btn btn-info' data-toggle='modal' data-target='#s".$shop['SID']."'>Open menu</button></td>";
                         echo "<br>";
                         echo "</tr>";
                     }
 
-                    // try{
-                    //     $sql = "SELECT * FROM store WHERE category= $category";
-                    //     $sql = "SELECT * FROM store";
-                    //     $stmt=$conn->prepare($sql);
-                    //     $stmt->execute();
-                    //     $chk = $stmt->setFetchMode(PDO::FETCH_ASSOC);
-                    //     $i=0;
-                    //     while(!empty($row=$stmt->fetch())){
-                    //         $i++;
-                    //         echo "<tr>";
-                    //         echo "<th scope='row'>".$i."</th>";
-                    //         echo "<td>".$row["name"]."</td>";
-                    //         echo "<td>".$row["category"]."</td>";
-                    //         echo "<td>near </td>";
-                    //         echo "<td>  <button type='button' class='btn btn-info '>Open menu</button></td>";
-                    //         echo "<br>";
-                    //         echo "</tr>";
-                    //     }
-                        
-                    // }catch(PDOException $e){
-                    //     echo 'Error';
-                    // }
                 ?>
                 
            
@@ -331,19 +312,19 @@ $shopDis=$_REQUEST['shopDis'];
             </table>
 
                 <!-- Modal -->
-  <div class="modal fade" id="macdonald"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
+  <!-- <div class="modal fade" id="macdonald"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog"> -->
     
       <!-- Modal content-->
-      <div class="modal-content">
+      <!-- <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">menu</h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body"> -->
          <!--  -->
   
-         <div class="row">
+         <!-- <div class="row">
           <div class="  col-xs-12">
             <table class="table" style=" margin-top: 15px;">
               <thead>
@@ -387,19 +368,121 @@ $shopDis=$_REQUEST['shopDis'];
             </table>
           </div>
 
-        </div>
+        </div> -->
         
 
          <!--  -->
-        </div>
+        <!-- </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Order</button>
         </div>
       </div>
       
     </div>
-  </div>
-          </div>
+  </div> -->
+          <!-- </div> -->
+
+    <?php
+    function getProducts($sid,$conn){
+        $menu=array();
+        try{
+            $sql = "SELECT * FROM product WHERE SID='$sid'";
+            $stmt=$conn->prepare($sql);
+            $stmt->execute();
+            $chk = $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            while(!empty($row=$stmt->fetch())){
+                $tmp=array(
+                    'pic'=>$row['picture'],
+                    'name'=>$row['name'],
+                    'price'=>$row['price'],
+                    'quant'=>$row['quantity']
+                );
+                array_push($menu,$tmp);
+            }
+            
+        }catch(PDOException $e){
+            echo 'Error';
+        }
+        return $menu;
+    }
+    ?>
+
+<?php 
+
+$rowCnt=0;
+foreach($srhShop as $shop){
+    $rowCnt++;
+    echo "<div class='modal fade' id='s".$shop['SID']."'  data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='staticBackdropLabel' aria-hidden='true'>";
+    echo<<<EOT
+    <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">menu</h4>
+        </div>
+        <div class="modal-body">
+        <!--  -->
+
+        <div class="row">
+        <div class="  col-xs-12">
+            <table class="table" style=" margin-top: 15px;">
+            <thead>
+                <tr>
+                <th scope="col">#</th>
+                <th scope="col">Picture</th>
+                
+                <th scope="col">meal name</th>
+            
+                <th scope="col">price</th>
+                <th scope="col">Quantity</th>
+                
+                <th scope="col">Order check</th>
+                </tr>
+            </thead>
+    EOT;
+    
+    $menu=getProducts($shop['SID'],$conn);
+    echo "<tbody>";
+    
+   
+    $rowCnt=0;
+    foreach($menu as $m){
+        $rowCnt++;
+        echo "<tr>"; 
+        echo "<th scope='row'>".$rowCnt."</th>";
+        echo "<td><img src='".$m['pic']."' with='50' heigh='10' alt='".$m['name']."'></td>";      
+        echo "<td>".$m['name']."</td>";     
+        echo "<td>".$m['price']."</td>";
+        echo "<td>".$m['quant']."</td>";
+        echo "<td> <input type='checkbox' id='cbox".$rowCnt."' value='".$m['name']."'></td>";
+        echo" </tr>";
+    }
+    
+    echo"</tbody>";
+
+    echo<<<EOT
+            </table>
+        </div>
+
+        </div>
+        
+
+        <!--  -->
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Order</button>
+        </div>
+    </div>
+    
+    </div>
+    </div>
+    EOT;
+}
+
+?>
+</div>
 
         </div>
       </div>
