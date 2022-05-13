@@ -22,9 +22,11 @@ if "__main__":
         exit(0)
     cursor = db.cursor()
 
+    # role = 0 if user
     sql = """
     CREATE TABLE user (
         UID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        role boolean,
         account text(20),
         password varchar(64),
         name varchar(20),
