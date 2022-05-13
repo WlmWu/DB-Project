@@ -58,6 +58,7 @@ except AssertionError as msg:
     popWindow(msg,0)
 
 # print("<h1>none empty</h1>")
+valid=0
 
 try:
     parser=re.compile("[ ]*([A-Za-z0-9]*)[ ]*")
@@ -109,48 +110,50 @@ try:
             assert False, 'Latitude is invalid.'
     else:
         assert False, 'Longitude is invalid.'
-    
+    valid=1
 except AssertionError as msg:
     popWindow(msg,0)
 
 # print("<h1>all valid</h1>")
-pwd=sha256(pwd.encode('utf-8')).hexdigest()
 
-db=connectDb('test') 
-if db is None:
-    print('error')
-    exit(0)
+if valid:
+    pwd=sha256(pwd.encode('utf-8')).hexdigest()
 
-cursor=db.cursor()
-sql="""
-    select account
-    from user
-    where account='%s'
-    """%(acnt)
+    db=connectDb('test') 
+    if db is None:
+        print('error')
+        exit(0)
 
-cursor.execute(sql)
-rlt = cursor.fetchone()
-
-if rlt!=None:
-    msg='Account has been registered.'
-    popWindow(msg,0)
-else:
-    # sql="""
-    # INSERT INTO user
-    # (account, password, name, phone, longitude, latitude)
-    # VALUES ('%s', '%s', '%s', '%s', %s, %s)
-    # """%(acnt,pwd,name,pho,lon,lat)
+    cursor=db.cursor()
     sql="""
-    INSERT INTO user
-    (account, password, name, phone, location)
-    VALUES ('%s', '%s', '%s', '%s', ST_GeomFromText('POINT(%s %s)'))
-    """%(acnt,pwd,name,pho,lon,lat)
+        select account
+        from user
+        where account='%s'
+        """%(acnt)
+
     cursor.execute(sql)
-    db.commit()
-    popWindow('Register Success.',1)
-    # print("<h1>inserted</h1>")
+    rlt = cursor.fetchone()
 
-db.close()
+    if rlt!=None:
+        msg='Account has been registered.'
+        popWindow(msg,0)
+    else:
+        # sql="""
+        # INSERT INTO user
+        # (account, password, name, phone, longitude, latitude)
+        # VALUES ('%s', '%s', '%s', '%s', %s, %s)
+        # """%(acnt,pwd,name,pho,lon,lat)
+        sql="""
+        INSERT INTO user
+        (account, password, name, phone, location)
+        VALUES ('%s', '%s', '%s', '%s', ST_GeomFromText('POINT(%s %s)'))
+        """%(acnt,pwd,name,pho,lon,lat)
+        cursor.execute(sql)
+        db.commit()
+        popWindow('Register Success.',1)
+        # print("<h1>inserted</h1>")
 
-# print("<h1>done</h1>")
+    db.close()
+
+    # print("<h1>done</h1>")
 
