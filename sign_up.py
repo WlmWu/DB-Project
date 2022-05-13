@@ -146,8 +146,8 @@ if valid:
         # """%(acnt,pwd,name,pho,lon,lat)
         sql="""
         INSERT INTO user
-        (account, password, name, phone, location)
-        VALUES ('%s', '%s', '%s', '%s', ST_GeomFromText('POINT(%s %s)'))
+        (account, password, name, phone, location, role)
+        VALUES ('%s', '%s', '%s', '%s', ST_GeomFromText('POINT(%s %s)'), FALSE)
         """%(acnt,pwd,name,pho,lon,lat)
         cursor.execute(sql)
         db.commit()
