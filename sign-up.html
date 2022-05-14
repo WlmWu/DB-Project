@@ -14,7 +14,7 @@
     <meta name="description" content="Free HTML5 Template by FreeHTML5.co" />
     <meta name="keywords" content="free html5, free template, free bootstrap, html5, css3, mobile first, responsive" />
     <meta name="author" content="FreeHTML5.co" />
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- 
 	//////////////////////////////////////////////////////
 
@@ -67,11 +67,12 @@
 
 
                 <!-- Start Sign In Form -->
-                <form action="sign_up.py" class="fh5co-form animate-box" data-animate-effect="fadeIn" method="post">
+                <form action="sign_up.py" id="signUp" class="fh5co-form animate-box" data-animate-effect="fadeIn" method="post">
                     <h2>Sign Up</h2>
                     <!-- <div class="form-group">
 							<div class="alert alert-success" role="alert">Your info has been saved.</div>
 						</div> -->
+
                     <div class="form-group">
                         <label for="name" class="sr-only">Name</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="Name" autocomplete="off">
@@ -82,7 +83,8 @@
                     </div>
                     <div class="form-group">
                         <label for="Account" class="sr-only">Account</label>
-                        <input type="text" class="form-control" id="Account" name="Account" placeholder="Account" autocomplete="off">
+                        <input type="text" class="form-control" id="Account" name="Account" placeholder="Account" autocomplete="off" oninput="checkAcnt()">
+                        <span id="check"></span>
                     </div>
                     <div class="form-group">
                         <label for="password" class="sr-only">Password</label>
@@ -131,6 +133,22 @@
     <!-- Main JS -->
     <script src="js/main.js"></script>
 
+
+    <script type="text/javascript">
+        function checkAcnt() {
+            jQuery.ajax({
+                url: "checkAccount.py",
+                data: 'Account=' + $("#Account").val(),
+                type: "POST",
+                success: function(data) {
+                    document.getElementById("check").innerHTML = data;
+                },
+                error: function() {
+                    console.log('ERROR')
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

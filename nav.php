@@ -70,24 +70,38 @@ $role=$_SESSION["role"];
 $srhShop=array();
 $srhShopId=array();
 
-foreach($_REQUEST['srhShopId'] as $s){
-    array_push($srhShopId,$s);
+if(isset($_REQUEST['srhShopId'])){
+    foreach($_REQUEST['srhShopId'] as $s){
+        array_push($srhShopId,$s);
+    }
+    // $srhShop[SID]['name' or 'categ']
+    for($i=0;$i<count($srhShopId);$i++){
+        $tmp['tmp']=array(
+            'SID'=>$_REQUEST['srhShopId'][$i],
+            'name'=>$_REQUEST['srhShopName'][$i],
+            'categ'=>$_REQUEST['srhShopCat'][$i],
+            'dis'=>$_REQUEST['srhShopDis'][$i]
+        );
+        $srhShop[$i] = $tmp['tmp'];
+    }
+    $_SESSION["Shops"]=$srhShop;
+}else{
+    $srhShop=$_SESSION["Shops"];
 }
-// $srhShop[SID]['name' or 'categ']
-for($i=0;$i<count($srhShopId);$i++){
-    $tmp['tmp']=array(
-        'SID'=>$_REQUEST['srhShopId'][$i],
-        'name'=>$_REQUEST['srhShopName'][$i],
-        'categ'=>$_REQUEST['srhShopCat'][$i],
-        'dis'=>$_REQUEST['srhShopDis'][$i]
-    );
-    $srhShop[$srhShopId[$i]] = $tmp['tmp'];
-}
-
 // foreach($srhShop as $shop){
 //     echo 'shop: '.$shop['name'].'<br>';
 // }
 // echo count($srhShop);
+
+?>
+
+<?php
+
+// get search page
+$pg=1;
+if(isset($_REQUEST["page"])){
+    $pg=$_REQUEST["page"];
+}
 
 ?>
 
@@ -223,6 +237,7 @@ for($i=0;$i<count($srhShopId);$i++){
                   <option>near</option>
                   <option>medium </option>
                   <option>far</option>
+                  <option>all</option>
 
                 </select>
               </div>
@@ -268,14 +283,28 @@ for($i=0;$i<count($srhShopId);$i++){
                     echo "<input type='hidden' name='longitude' value='".$lon."'>";
                     echo "<input type='hidden' name='latitude' value='".$lat."'>";
                 ?>
-                <button type="submit" style="margin-left: 18px;"class="btn btn-primary">Search</button>
+            
+              <label class="control-label col-sm-1" for="order">Order by</label>
+              <div class="col-sm-5">
+                <select class="form-control" id="sel2" name="sort">
+                  <option>distance</option>
+                  <option>name</option>
+                  <option>category </option>
+                </select>
+                <select class="form-control" style="margin-top: 5px;" id="sel3" name="order">
+                  <option>ascending</option>
+                  <option>descending</option>
+                </select>
+              </div><br>
+
+                <button type="submit" style="margin: 18px;"class="btn btn-primary">Search</button>
               
             </div>
           </form>
         </div>
         <div class="row">
           <div class="  col-xs-8">
-            <table class="table" style=" margin-top: 15px;">
+            <table class="table" style="margin-top: 10px; margin-bottom: 0px;">
               <thead>
                 <tr>
                   <th scope="col">#</th>
@@ -300,24 +329,41 @@ for($i=0;$i<count($srhShopId);$i++){
                 </tr> -->
                 <?php
                     $rowCnt=0;
-                    foreach($srhShop as $shop){
-                        $rowCnt++;
+                    for($i=($pg-1)*5;$i<count($srhShop) && $i<$pg*5;$i++){
+                        // $rowCnt++;
                         echo "<tr>";
-                        echo "<th scope='row'>".$rowCnt."</th>";
-                        echo "<td>".$shop["name"]."</td>";
-                        echo "<td>".$shop["categ"]."</td>";
-                        echo "<td>".$shop["dis"]."</td>";
-                        echo "<td>  <button type='button' class='btn btn-info' data-toggle='modal' data-target='#s".$shop['SID']."'>Open menu</button></td>";
-                        echo "<br>";
+                        echo "<th scope='row'>".($i+1)."</th>";
+                        echo "<td>".$srhShop[$i]["name"]."</td>";
+                        echo "<td>".$srhShop[$i]["categ"]."</td>";
+                        echo "<td>".$srhShop[$i]["dis"]."</td>";
+                        echo "<td>  <button type='button' class='btn btn-info' data-toggle='modal' data-target='#s".$srhShop[$i]['SID']."'>Open menu</button></td>";
                         echo "</tr>";
                     }
-
                 ?>
-                
-           
-
               </tbody>
             </table>
+
+            <ul class="pagination pagination-lg" style="margin-bottom: 100px">
+            
+            <?php
+                if($pg>1){
+                    echo "<li><a href='nav.php?&page=".($pg-1)."'>&laquo;</a></li>";
+                }else{
+                    echo "<li><a href='#'>&laquo;</a></li>";
+                }
+                
+                for($i=0;$i<ceil(count($srhShop)/5);$i++){
+                    echo "<li><a href='nav.php?&page=".($i+1)."'>".($i+1)."</a></li>";
+                }
+
+                if($pg<ceil(count($srhShop)/5)){
+                    echo "<li><a href='nav.php?&page=".($pg+1)."'>&raquo;</a></li>";
+                }else{
+                    echo "<li><a href='#'>&raquo;</a></li>";
+                }
+                
+            ?>
+            </ul><br>
 
                 <!-- Modal -->
   <!-- <div class="modal fade" id="macdonald"  data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">

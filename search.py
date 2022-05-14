@@ -42,8 +42,11 @@ pLw=form.getvalue('PriLow')
 pHi=form.getvalue('PriHigh')
 meal=form.getvalue('Meal')
 cat=form.getvalue('categ')
+odrBy=form.getvalue('sort')
+odr=form.getvalue('order')
 
 dist={'near':3000,'medium':6000,'far':10000}
+orderBy={'distance':'distance','name':'name','category':'category'}
 
 db=connectDb('test') 
 if db is None:
@@ -53,17 +56,20 @@ if db is None:
 cursor=db.cursor()
 
 # distance
-sql="""
-    SELECT * , ST_AsText(location) AS storeLoc, ST_Distance_Sphere(POINT(%s,%s),location) AS distant
-    FROM store
-    WHERE ST_Distance_Sphere(POINT(%s,%s),location) < %s ORDER BY distant
-    """%(usrLoc[0],usrLoc[1],usrLoc[0],usrLoc[1],dist[dis])
-
-# show all stores
-# sql="""
-#     SELECT * , ST_AsText(location) AS storeLoc, ST_Distance_Sphere(POINT(%s,%s),location) AS distant
-#     FROM store
-#     """%(usrLoc[0],usrLoc[1])
+sql=""
+if dis!='all':
+    sql="""
+        SELECT * , ST_AsText(location) AS storeLoc, ST_Distance_Sphere(POINT(%s,%s),location) AS distance
+        FROM store
+        WHERE ST_Distance_Sphere(POINT(%s,%s),location) < %s ORDER BY %s
+        """%(usrLoc[0],usrLoc[1],usrLoc[0],usrLoc[1],dist[dis],orderBy[odrBy])
+else:
+    # show all stores
+    sql="""
+        SELECT * , ST_AsText(location) AS storeLoc, ST_Distance_Sphere(POINT(%s,%s),location) AS distance
+        FROM store
+        ORDER BY %s
+        """%(usrLoc[0],usrLoc[1],orderBy[odrBy])
 
 cursor.execute(sql)
 rlt = cursor.fetchall()     # row: (SID, UID, name, categ, loca, txtLoc, dis)
@@ -160,5 +166,4 @@ else:
                 tmp.append(s)
         stores=tmp
 
- 
-    rtnVal('nav.php',stores)
+    rtnVal('nav.php',stores=stores if odr=="ascending" else stores[::-1])
