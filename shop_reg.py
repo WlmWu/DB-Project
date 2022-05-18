@@ -90,7 +90,7 @@ if valid:
     cursor=db.cursor()
     #print("<h1>try executed sql</h1>")
     cursor.execute("SELECT name FROM store WHERE name= %(shop_name)s", {'shop_name':shop_name})
-    print("<h1>executed sql succes</h1>")
+    # print("<h1>executed sql succes</h1>")
 
     rlt = cursor.fetchone()
 
