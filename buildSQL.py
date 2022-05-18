@@ -26,7 +26,7 @@ if "__main__":
     sql = """
     CREATE TABLE user (
         UID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        account text(20),
+        account text(20) COLLATE utf8mb4_bin,
         password varchar(64),
         name varchar(20),
         phone varchar(10),
@@ -41,7 +41,7 @@ if "__main__":
     CREATE TABLE store (
         SID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         UID int,
-        name varchar(20),
+        name varchar(20) COLLATE utf8mb4_bin,
         category varchar(20),
         location geometry NOT NULL,
         FOREIGN KEY (UID) REFERENCES user(UID) 
@@ -54,7 +54,7 @@ if "__main__":
     CREATE TABLE product (
         PID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         SID int,
-        name varchar(20),
+        name varchar(20) COLLATE utf8mb4_bin,
         picture longtext,
         price decimal,
         quantity int,
@@ -64,7 +64,7 @@ if "__main__":
     """
     cursor.execute(sql)
 
-
+    cursor.execute(sql)
     db.commit()
 
     # end connection
