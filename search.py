@@ -80,7 +80,6 @@ rlt = cursor.fetchall()     # row: (SID, UID, name, categ, loca, txtLoc, dis)
 stores=[]
 
 if rlt==():
-    
     rtnVal('nav.php',stores)
 else:
 
@@ -110,7 +109,7 @@ else:
             continue
         tmp.append(s)
     stores=tmp
-    print('s: ',stores,'<br>')
+
     # name
     if name!=None:
         tmp=[]
@@ -119,7 +118,7 @@ else:
             if mth!=None:
                 tmp.append(s)
         stores=tmp
-    print('s: ',stores,'<br>')
+
     # price
     if pLw!=None or pHi!=None:
         tmp=[]
@@ -141,7 +140,7 @@ else:
             if rlt==():
                 tmp.append(s)
         stores=tmp
-    print('s: ',stores,'<br>')
+
     # meal
     if meal!=None:
         tmp=[]
@@ -159,7 +158,7 @@ else:
                     tmp.append(s)
                     break
         stores=tmp
-    print('s: ',stores,'<br>')
+
     # category
     if cat!=None:
         tmp=[]
@@ -168,7 +167,7 @@ else:
             if mth!=None:
                 tmp.append(s)
         stores=tmp
-    print('s: ',stores,'<br>')
+
     # replace special symbol
     for store in stores:
         for k,v in store.items():
