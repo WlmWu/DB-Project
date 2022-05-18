@@ -61,7 +61,7 @@ if($_FILES["file"]["size"]!=0){
         <input type='hidden' name='price' value='$price'>
         <input type='hidden' name='quantity' value='$quant'>
         <input type='hidden' name='file' value='$fileContents'>
-        <input type='hidden' name='ingType' value='$img_type'>
+        <input type='hidden' name='imgType' value='$img_type'>
     </form>
     <script>
         document.getElementsByTagName('form')[0].submit();
