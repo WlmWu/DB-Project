@@ -28,7 +28,7 @@ def rtnVal(addr,stores):
         # print(s['name'],'<br>')
         print(f"<input type='hidden' name='srhShopId[]' value='{s['SID']}'>")
         print('<input type="hidden" name="srhShopName[]" value="%s">'%s['name'])
-        print("<input type='hidden' name='srhShopCat[]' value=%s>"%s['categ'])
+        print('<input type="hidden" name="srhShopCat[]" value="%s">'%s['categ'])
         print(f"<input type='hidden' name='srhShopDis[]' value='{s['dis']}'>")
     print('</form>')
     print("<script>")
