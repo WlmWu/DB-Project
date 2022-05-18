@@ -24,6 +24,7 @@ def connectDb(dbName):
 
 def rtnVal(addr,stores):
     # print(stores)
+    stores=[{'SID':'0','name':'Oops~','categ':'No Shops','dis':'Match!'}] if len(stores)==0 else stores
     addr='nav.php'
     print('<form action="%s" method="post">'%addr)
     for s in stores:
@@ -79,7 +80,7 @@ rlt = cursor.fetchall()     # row: (SID, UID, name, categ, loca, txtLoc, dis)
 stores=[]
 
 if rlt==():
-    stores=[{'SID':'0','name':'Oops~','categ':'No Shops','dis':'Match!'}]
+    
     rtnVal('nav.php',stores)
 else:
 
@@ -109,7 +110,7 @@ else:
             continue
         tmp.append(s)
     stores=tmp
-
+    print('s: ',stores,'<br>')
     # name
     if name!=None:
         tmp=[]
@@ -118,7 +119,7 @@ else:
             if mth!=None:
                 tmp.append(s)
         stores=tmp
-
+    print('s: ',stores,'<br>')
     # price
     if pLw!=None or pHi!=None:
         tmp=[]
@@ -140,7 +141,7 @@ else:
             if rlt==():
                 tmp.append(s)
         stores=tmp
-
+    print('s: ',stores,'<br>')
     # meal
     if meal!=None:
         tmp=[]
@@ -153,13 +154,12 @@ else:
             cursor.execute(sql)
             rlt = cursor.fetchall()
             for row in rlt:
-                print(row)
                 mth = re.search(meal.lower(), row[1].lower())
                 if mth!=None:
                     tmp.append(s)
                     break
         stores=tmp
-
+    print('s: ',stores,'<br>')
     # category
     if cat!=None:
         tmp=[]
@@ -168,7 +168,7 @@ else:
             if mth!=None:
                 tmp.append(s)
         stores=tmp
-
+    print('s: ',stores,'<br>')
     # replace special symbol
     for store in stores:
         for k,v in store.items():

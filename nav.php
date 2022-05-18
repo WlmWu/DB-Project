@@ -101,7 +101,6 @@ if(isset($_REQUEST['srhShopId'])){
         $srhShop[$i] = $tmp['tmp'];
     }
     $_SESSION["Shops"]=$srhShop;
-    echo $srhShop[$i]['name'].'<br>';
 }else{
     $srhShop=$_SESSION["Shops"];
 }
