@@ -38,7 +38,7 @@ if(isset($_FILES["file"]["tmp_name"])){
     fclose($file);
     //讀取出來的圖片資料必須使用base64_encode()函數加以編碼：圖片檔案資料編碼
     $fileContents = base64_encode($fileContents);
-    // $img = imagescale( $fileContents, 10, 10 );
+
                                     
     // echo '<img src="data:'.$img_type.';base64,' . $fileContents . '" />';
 
