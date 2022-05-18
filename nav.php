@@ -345,9 +345,7 @@ if(isset($_REQUEST["page"])){
                 </tr> -->
                 <?php
                 if(isset($srhShop)){
-                    $rowCnt=0;
                     for($i=($pg-1)*5;$i<count($srhShop) && $i<$pg*5;$i++){
-                        // $rowCnt++;
                         echo "<tr>";
                         echo "<th scope='row'>".($i+1)."</th>";
                         echo "<td>".$srhShop[$i]["name"]."</td>";
@@ -523,14 +521,28 @@ if(isset($srhShop)){
         $rowCnt=0;
         foreach($menu as $m){
             $rowCnt++;
-            echo "<tr>"; 
-            echo "<th scope='row'>".$rowCnt."</th>"; 
-            echo '<td><img src="data:'.$img_type.';base64,' .$m['pic']. '" /></td>';  
-            echo "<td>".$m['name']."</td>";     
-            echo "<td>".$m['price']."</td>";
-            echo "<td>".$m['quant']."</td>";
-            echo '<td> <input type="checkbox" id=cbox"'.$rowCnt.'" value="'.$m['name'].'"></td>';
-            echo" </tr>";
+            $mPic=$m['pic'];
+            $mName=$m['name'];
+            $mPric=$m['price'];
+            $mQuan=$m['quant'];
+            echo<<<EOT
+                <tr>
+                    <th scope='row'>$rowCnt</th>
+                    <td><img src="data:$img_type;base64,$mPic"/></td>
+                    <td>$mName</td>
+                    <td>$mPric</td>
+                    <td>$mQuan</td>
+                    <td><input type="checkbox" id=cbox"$rowCnt" value="$mName"</td>
+                </tr>
+            EOT;
+            // echo "<tr>"; 
+            // echo "<th scope='row'>".$rowCnt."</th>"; 
+            // echo '<td><img src="data:'.$img_type.';base64,' .$m['pic']. '" /></td>';  
+            // echo "<td>".$m['name']."</td>";     
+            // echo "<td>".$m['price']."</td>";
+            // echo "<td>".$m['quant']."</td>";
+            // echo '<td> <input type="checkbox" id=cbox"'.$rowCnt.'" value="'.$m['name'].'"></td>';
+            // echo" </tr>";
         }
         
         echo"</tbody>";
@@ -571,7 +583,9 @@ if(isset($srhShop)){
               <div class="col-xs-2">
                 <label for="shopname">Shop name: </label>
                 <?php if ($_SESSION['role']) {
-                  echo '<input class="form-control" value="'.$_SESSION['shop_name'].'" disabled>';
+                    $shopName=sprintf('<input class="form-control" value="%s" disabled>',$_SESSION['shop_name']);
+                    $shopCat=sprintf('<input class="form-control" value="%s" disabled>',$_SESSION['category']);
+                  echo $shopName;
                 }else{ echo<<<LABEL
                 <input class="form-control" id="shopname" name="shopname" placeholder="macdonald" type="text" oninput="checky()">
                 <span id="check"></span>
@@ -581,7 +595,7 @@ if(isset($srhShop)){
               <div class="col-xs-2">
                 <label for="shopcategory">Shop category: </label>
                 <?php if ($_SESSION['role']) {
-                  echo '<input class="form-control" value="'.$_SESSION['category'].'" disabled>';
+                  echo $shopCat;
                 } else echo '<input class="form-control" id="shopcategory" name="shopcategory" placeholder="fast food" type="text" >'
                 ?>
                 </div>
