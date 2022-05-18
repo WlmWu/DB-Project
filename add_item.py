@@ -45,6 +45,11 @@ img = form.getvalue('file')
 imgType = form.getvalue('imgType')
 
 
+# print(SID,'<br>')
+# print(name,'<br>')
+# print(pri,'<br>')
+# print(quan,'<br>')
+# print(imgType,'<br>')
 # print("file: ",len(img),'<br>')
 
 
@@ -88,8 +93,8 @@ except AssertionError as msg:
 
 
 # print("<img src='data:",imgType,";base64,",img,"'/>")
-# uploaded_file_path = os.path.join(UPLOAD_DIR, os.path.basename(img))
 
+# valid=0
 
 if valid:
     db=connectDb('test') 
@@ -118,8 +123,6 @@ if valid:
         """
 
         cursor.execute(sql,[SID,name,img,pri,quan,imgType])
-        # cursor.execute(sql,{'SID':SID, 'name':name, 'img':img, 'pri':pri, 'quan':quan, 'imgType':imgType})
-
 
         db.commit()
         

@@ -7,6 +7,7 @@
 ?>
 
 <?php
+if(isset($_FILES["file"]["tmp_name"])){
     $file_name=$_FILES["file"]["tmp_name"];
     // resize image
     $maxDim = 100;
@@ -47,19 +48,30 @@
     $quant=$_REQUEST['quantity'];
     $img_type=$_FILES["file"]["type"];
     // echo 'name: '.$name;
-
+    
+    $formName=sprintf("<input type='hidden' name='mealname' value='%s'>",$name);
+    $formImg=sprintf("<input type='hidden' name='file' value='%s'>",$fileContents);
+    $formType=sprintf("<input type='hidden' name='imgType' value='%s'>",$img_type);
+    
     echo<<<EOT
     <form action="add_item.py" method="post">
         <input type='hidden' name='SID' value='$sid'>
-        <input type='hidden' name='mealname' value="$name">
+        $formName
         <input type='hidden' name='price' value='$price'>
         <input type='hidden' name='quantity' value='$quant'>
-        <input type='hidden' name='file' value='$fileContents'>
-        <input type='hidden' name='imgType' value='$img_type'>
+        $formImg
+        $formType
     </form>
     <script>
         document.getElementsByTagName('form')[0].submit();
     </script>
     EOT;
-
+}else{
+    echo<<<EOT
+        <script>
+            window.location.href="nav.php"
+            window.alert("Image is empty")
+        </script>
+    EOT;
+}
 ?>
