@@ -68,7 +68,7 @@ if ($data["role"]){
     $stmt=$conn->prepare($sql);		
     $stmt->execute();		
     $data=$stmt->fetch();		
-    $_SESSION['SID']=$data["SID"];		
+    $_SESSION['SID']=$data["SID"];	
     $_SESSION['shop_name']=$data["name"];		
     $_SESSION['category']=$data["category"];		
     $pattern = "/[0-9]+[.]*[0-9]{0,6} [0-9]+[.]*[0-9]{0,6}/";		
@@ -101,6 +101,7 @@ if(isset($_REQUEST['srhShopId'])){
         $srhShop[$i] = $tmp['tmp'];
     }
     $_SESSION["Shops"]=$srhShop;
+    echo $srhShop[$i]['name'].'<br>';
 }else{
     $srhShop=$_SESSION["Shops"];
 }
@@ -119,6 +120,15 @@ if(isset($_REQUEST["page"])){
     $pg=$_REQUEST["page"];
 }
 
+?>
+
+<?php
+// replace special symbol
+function replaceStr($str){
+    $str=str_replace("'","&apos;",$str);
+    $str=str_replace('"','&quot;',$str);
+    return $str;
+}
 ?>
 
 <!doctype html>
@@ -348,8 +358,8 @@ if(isset($_REQUEST["page"])){
                     for($i=($pg-1)*5;$i<count($srhShop) && $i<$pg*5;$i++){
                         echo "<tr>";
                         echo "<th scope='row'>".($i+1)."</th>";
-                        echo "<td>".$srhShop[$i]["name"]."</td>";
-                        echo "<td>".$srhShop[$i]["categ"]."</td>";
+                        echo "<td>".replaceStr($srhShop[$i]["name"])."</td>";
+                        echo "<td>".replaceStr($srhShop[$i]["categ"])."</td>";
                         echo "<td>".$srhShop[$i]["dis"]."</td>";
                         echo "<td>  <button type='button' class='btn btn-info' data-toggle='modal' data-target='#s".$srhShop[$i]['SID']."'>Open menu</button></td>";
                         echo "</tr>";
@@ -522,7 +532,7 @@ if(isset($srhShop)){
         foreach($menu as $m){
             $rowCnt++;
             $mPic=$m['pic'];
-            $mName=$m['name'];
+            $mName=replaceStr($m['name']);
             $mPric=$m['price'];
             $mQuan=$m['quant'];
             echo<<<EOT
@@ -582,21 +592,32 @@ if(isset($srhShop)){
             <div class="row">
               <div class="col-xs-2">
                 <label for="shopname">Shop name: </label>
-                <?php if ($_SESSION['role']) {
-                    $shopName=sprintf('<input class="form-control" value="%s" disabled>',$_SESSION['shop_name']);
-                    $shopCat=sprintf('<input class="form-control" value="%s" disabled>',$_SESSION['category']);
-                  echo $shopName;
-                }else{ echo<<<LABEL
-                <input class="form-control" id="shopname" name="shopname" placeholder="macdonald" type="text" oninput="checky()">
-                <span id="check"></span>
-                LABEL;
-                }?>
+                <?php 
+                if ($_SESSION['role']) {
+                    $shopName=replaceStr($_SESSION['shop_name']);
+                    echo <<<EOT
+                        <input class="form-control" value="$shopName" disabled>
+                        <script>
+                          #document.getElementById("shopName").value="$shopName";
+                        </script>
+                    EOT;
+                }else{ 
+                    echo<<<LABEL
+                    <input class="form-control" id="shopname" name="shopname" placeholder="macdonald" type="text" oninput="checky()">
+                    <span id="check"></span>
+                    LABEL;
+                }
+                ?>
               </div>
               <div class="col-xs-2">
                 <label for="shopcategory">Shop category: </label>
-                <?php if ($_SESSION['role']) {
-                  echo $shopCat;
-                } else echo '<input class="form-control" id="shopcategory" name="shopcategory" placeholder="fast food" type="text" >'
+                <?php 
+                if ($_SESSION['role']) {
+                    $shopCat=replaceStr($_SESSION['category']);
+                    echo <<<EOT
+                        <input class="form-control" value="$shopCat" disabled>
+                    EOT;
+                } else echo '<input class="form-control" id="shopcategory" name="shopcategory" placeholder="fast food" type="text" >';
                 ?>
                 </div>
               <div class="col-xs-2">

@@ -1,9 +1,10 @@
 <?php
-    // echo '檔案名稱: ' . $_FILES['file']['name'] . '<br/>';
-    // echo '檔案類型: ' . $_FILES['file']['type'] . '<br/>';
-    // echo '檔案大小: ' . ($_FILES['file']['size'] / 1024) . ' KB<br/>';
-    // echo '暫存名稱: ' . $_FILES['file']['tmp_name'] . '<br/>';
-
+// replace special symbol
+function replaceStr($str){
+    $str=str_replace("'","&apos;",$str);
+    $str=str_replace('"','&quot;',$str);
+    return $str;
+}
 ?>
 
 <?php
@@ -43,7 +44,7 @@ if($_FILES["file"]["size"]!=0){
     // echo '<img src="data:'.$img_type.';base64,' . $fileContents . '" />';
 
     $sid = $_REQUEST['SID'];
-    $name=$_REQUEST['mealname'];
+    $name=replaceStr($_REQUEST['mealname']);
     $price=$_REQUEST['price'];
     $quant=$_REQUEST['quantity'];
     $img_type=$_FILES["file"]["type"];
@@ -56,11 +57,11 @@ if($_FILES["file"]["size"]!=0){
     echo<<<EOT
     <form action="add_item.py" method="post">
         <input type='hidden' name='SID' value='$sid'>
-        $formName
+        <input type='hidden' name='mealname' value='$name'>
         <input type='hidden' name='price' value='$price'>
         <input type='hidden' name='quantity' value='$quant'>
-        $formImg
-        $formType
+        <input type='hidden' name='file' value='$fileContents'>
+        <input type='hidden' name='ingType' value='$img_type'>
     </form>
     <script>
         document.getElementsByTagName('form')[0].submit();

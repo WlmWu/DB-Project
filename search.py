@@ -3,8 +3,10 @@
 print("Content-type:text/html")
 print()
 
-import cgi 
+import cgi
+from dataclasses import replace 
 import re
+from turtle import st
 import pymysql
 import logging
 
@@ -166,5 +168,14 @@ else:
             if mth!=None:
                 tmp.append(s)
         stores=tmp
+
+    # replace special symbol
+    for store in stores:
+        for k,v in store.items():
+            if type(v)==str:
+                tmp=v
+                tmp=tmp.replace("'","&apos;")
+                tmp=tmp.replace('"','&quot;')
+                store[k]=tmp
 
     rtnVal('nav.php',stores=stores if odr=="ascending" else stores[::-1])
