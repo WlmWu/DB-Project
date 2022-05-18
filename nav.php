@@ -30,14 +30,14 @@ if(isset($_REQUEST["edLat"]) && isset($_REQUEST["edLon"])){
     }
 }
 
-// get params
+// get user info
 $sql = "SELECT * ,ST_AsText(location) AS txtLoc FROM user WHERE account= '$acnt'";
 $stmt=$conn->prepare($sql);
 $stmt->execute();
 $data=$stmt->fetch();
 $_SESSION['name']=$data["name"];
 $_SESSION['phone']=$data["phone"];
-$_SESSION['UID']=$$data["UID"];
+$_SESSION['UID']=$data["UID"];
 if ($data["role"]){
     $_SESSION['role']=1;
 }
@@ -51,7 +51,7 @@ $location = explode(' ', $mth[0]);
 $_SESSION['longitude']=$location[0];
 $_SESSION['latitude']=$location[1];
 
-$uid=$_SESSION["UID"];
+$UID=$_SESSION["UID"];
 $name=$_SESSION["name"];
 $pho=$_SESSION["phone"];
 $lon=$_SESSION["longitude"];
@@ -61,7 +61,23 @@ $role=$_SESSION["role"];
 // $pho=$data["phone"];
 // $lon=$data["longitude"];
 // $lat=$data["latitude"];
-
+		
+//get shop info		
+if ($data["role"]){		
+    $sql = "SELECT * ,ST_AsText(location) AS txtLoc FROM store WHERE UID='$UID'";		
+    $stmt=$conn->prepare($sql);		
+    $stmt->execute();		
+    $data=$stmt->fetch();		
+    $_SESSION['SID']=$data["SID"];		
+    $_SESSION['shop_name']=$data["name"];		
+    $_SESSION['category']=$data["category"];		
+    $pattern = "/[0-9]+[.]*[0-9]{0,6} [0-9]+[.]*[0-9]{0,6}/";		
+    preg_match($pattern, $data["txtLoc"], $mth);		
+    $location = explode(' ', $mth[0]);		
+    $_SESSION['shop_longitude']=$location[0];		
+    $_SESSION['shop_latitude']=$location[1];		
+    $SID=$_SESSION['SID'];		
+}
 ?>
 
 <?php 
@@ -148,7 +164,7 @@ if(isset($_REQUEST["page"])){
         <h3>Profile</h3>
         <div class="row">
           <div class="col-xs-12">
-            Account: <?php echo $acnt; ?>, Name: <?php echo $name; ?> , <?php if (!$role){echo 'User';}else{echo 'Mananger';}?>, PhoneNumber: <?php echo $pho; ?>,  location: <?php echo $lon; ?>, <?php echo $lat; ?>
+            Account: <?php echo $acnt; ?>, Name: <?php echo $name; ?>, Role: <?php echo ($role)?'Mananger':'User';?>, PhoneNumber: <?php echo $pho; ?>,  location: <?php echo $lon; ?>, <?php echo $lat; ?>
             
             <button type="button " style="margin-left: 5px;" class=" btn btn-info " data-toggle="modal"
             data-target="#location">edit location</button>
@@ -328,6 +344,7 @@ if(isset($_REQUEST["page"])){
                 
                 </tr> -->
                 <?php
+                if(isset($srhShop)){
                     $rowCnt=0;
                     for($i=($pg-1)*5;$i<count($srhShop) && $i<$pg*5;$i++){
                         // $rowCnt++;
@@ -339,6 +356,7 @@ if(isset($_REQUEST["page"])){
                         echo "<td>  <button type='button' class='btn btn-info' data-toggle='modal' data-target='#s".$srhShop[$i]['SID']."'>Open menu</button></td>";
                         echo "</tr>";
                     }
+                }
                 ?>
               </tbody>
             </table>
@@ -346,6 +364,7 @@ if(isset($_REQUEST["page"])){
             <ul class="pagination pagination-lg" style="margin-bottom: 100px">
             
             <?php
+            if(isset($srhShop)){
                 if($pg>1){
                     echo "<li><a href='nav.php?&page=".($pg-1)."'>&laquo;</a></li>";
                 }else{
@@ -361,7 +380,7 @@ if(isset($_REQUEST["page"])){
                 }else{
                     echo "<li><a href='#'>&raquo;</a></li>";
                 }
-                
+            }
             ?>
             </ul><br>
 
@@ -463,78 +482,78 @@ if(isset($_REQUEST["page"])){
 
 <?php 
 
-$rowCnt=0;
-foreach($srhShop as $shop){
-    $rowCnt++;
-    echo "<div class='modal fade' id='s".$shop['SID']."'  data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='staticBackdropLabel' aria-hidden='true'>";
-    echo<<<EOT
-    <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-        <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">menu</h4>
-        </div>
-        <div class="modal-body">
-        <!--  -->
-
-        <div class="row">
-        <div class="  col-xs-12">
-            <table class="table" style=" margin-top: 15px;">
-            <thead>
-                <tr>
-                <th scope="col">#</th>
-                <th scope="col">Picture</th>
-                
-                <th scope="col">meal name</th>
-            
-                <th scope="col">price</th>
-                <th scope="col">Quantity</th>
-                
-                <th scope="col">Order check</th>
-                </tr>
-            </thead>
-    EOT;
-    
-    $menu=getProducts($shop['SID'],$conn);
-    echo "<tbody>";
-    
-   
+if(isset($srhShop)){
     $rowCnt=0;
-    foreach($menu as $m){
+    foreach($srhShop as $shop){
         $rowCnt++;
-        echo "<tr>"; 
-        echo "<th scope='row'>".$rowCnt."</th>";
-        echo "<td><img src='".$m['pic']."' with='50' heigh='10' alt='".$m['name']."'></td>";      
-        echo "<td>".$m['name']."</td>";     
-        echo "<td>".$m['price']."</td>";
-        echo "<td>".$m['quant']."</td>";
-        echo "<td> <input type='checkbox' id='cbox".$rowCnt."' value='".$m['name']."'></td>";
-        echo" </tr>";
-    }
+        echo "<div class='modal fade' id='s".$shop['SID']."'  data-backdrop='static' tabindex='-1' role='dialog' aria-labelledby='staticBackdropLabel' aria-hidden='true'>";
+        echo<<<EOT
+        <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">menu</h4>
+            </div>
+            <div class="modal-body">
+            <!--  -->
+
+            <div class="row">
+            <div class="  col-xs-12">
+                <table class="table" style=" margin-top: 15px;">
+                <thead>
+                    <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Picture</th>
+                    
+                    <th scope="col">meal name</th>
+                
+                    <th scope="col">price</th>
+                    <th scope="col">Quantity</th>
+                    
+                    <th scope="col">Order check</th>
+                    </tr>
+                </thead>
+        EOT;
+        
+        $menu=getProducts($shop['SID'],$conn);
+        echo "<tbody>";
     
-    echo"</tbody>";
+        $rowCnt=0;
+        foreach($menu as $m){
+            $rowCnt++;
+            echo "<tr>"; 
+            echo "<th scope='row'>".$rowCnt."</th>"; 
+            echo '<td><img src="data:'.$img_type.';base64,' .$m['pic']. '" /></td>';  
+            echo "<td>".$m['name']."</td>";     
+            echo "<td>".$m['price']."</td>";
+            echo "<td>".$m['quant']."</td>";
+            echo '<td> <input type="checkbox" id=cbox"'.$rowCnt.'" value="'.$m['name'].'"></td>';
+            echo" </tr>";
+        }
+        
+        echo"</tbody>";
 
-    echo<<<EOT
-            </table>
-        </div>
+        echo<<<EOT
+                </table>
+            </div>
 
+            </div>
+            
+
+            <!--  -->
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Order</button>
+            </div>
         </div>
         
-
-        <!--  -->
         </div>
-        <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Order</button>
         </div>
-    </div>
-    
-    </div>
-    </div>
-    EOT;
+        EOT;
+    }
 }
-
 ?>
 </div>
 
@@ -543,72 +562,109 @@ foreach($srhShop as $shop){
       <div id="menu1" class="tab-pane fade">
 
         <h3> Start a business </h3>
-        <div class="form-group ">
-        <input type='hidden' name='UID' value=<?php "'".$uid."'"?>>
-          <div class="row">
-            <div class="col-xs-2">
-              <label for="ex5">shop name</label>
-              <input class="form-control" id="ex5" placeholder="macdonald" type="text" >
-            </div>
-            <div class="col-xs-2">
-              <label for="ex5">shop category</label>
-              <input class="form-control" id="ex5" placeholder="fast food" type="text" >
-            </div>
-            <div class="col-xs-2">
-              <label for="ex6">latitude</label>
-              <input class="form-control" id="ex6" placeholder="121.00028167648875" type="text" >
-            </div>
-            <div class="col-xs-2">
-              <label for="ex8">longitude</label>
-              <input class="form-control" id="ex8" placeholder="24.78472733371133" type="text" >
+        <form class="form-horizontal" action="shop_reg.py" method="post">
+          <div class="form-group ">
+            
+          <input type="hidden" name="UID" value="<?php echo $UID;?>"> 
+            
+            <div class="row">
+              <div class="col-xs-2">
+                <label for="shopname">Shop name: </label>
+                <?php if ($_SESSION['role']) {
+                  echo '<input class="form-control" value="'.$_SESSION['shop_name'].'" disabled>';
+                }else{ echo<<<LABEL
+                <input class="form-control" id="shopname" name="shopname" placeholder="macdonald" type="text" oninput="checky()">
+                <span id="check"></span>
+                LABEL;
+                }?>
+              </div>
+              <div class="col-xs-2">
+                <label for="shopcategory">Shop category: </label>
+                <?php if ($_SESSION['role']) {
+                  echo '<input class="form-control" value="'.$_SESSION['category'].'" disabled>';
+                } else echo '<input class="form-control" id="shopcategory" name="shopcategory" placeholder="fast food" type="text" >'
+                ?>
+                </div>
+              <div class="col-xs-2">
+                <label for="latitude">Latitude: </label>
+                <?php if ($_SESSION['role']) {
+                  echo "<input class='form-control' value='".$_SESSION['shop_latitude']."' disabled>";
+                } else echo '<input class="form-control" id="latitude" name="latitude" placeholder="24.78472733371133" type="text" >'
+                ?>
+                </div>
+              <div class="col-xs-2">
+                <label for="longitude">Longitude: </label>
+                <?php if ($_SESSION['role']) {
+                  echo "<input class='form-control' value='".$_SESSION['shop_longitude']."' disabled>";
+                } else echo '<input class="form-control" id="longitude" name="longitude" placeholder="121.00028167648875" type="text" >'
+                ?>
+                </div>
             </div>
           </div>
-        </div>
 
-
-
-        <div class=" row" style=" margin-top: 25px;">
-          <div class=" col-xs-3">
-            <button type="button" class="btn btn-primary"  >register</button>
+          <div class=" row" style=" margin-top: 25px;">
+            <div class=" col-xs-3">
+              <button type="submit" class="btn btn-primary"  <?php echo ($_SESSION["role"]) ? 'disabled': '' ?>>register</button>
+            </div>
           </div>
-        </div>
-        
+        </form>
+        <script type="text/javascript">
+            function checky() {
+                jQuery.ajax({
+                    url: "checkShopName.py",
+                    data: 'shopname=' + $("#shopname").val(),
+                    type: "POST",
+                    success: function(data) {
+                        document.getElementById("check").innerHTML = data;
+                    },
+                    error: function() {
+                        console.log('ERROR')
+                    }
+                });
+            }
+        </script>
+
         <hr>
         <h3>ADD</h3>
-
-        <div class="form-group ">
-          <div class="row">
-
-            <div class="col-xs-6">
-              <label for="ex3">meal name</label>
-              <input class="form-control" id="ex3" type="text">
+        <form class="form-horizontal" enctype="multipart/form-data" action="add_item.php" method="post">
+          <div class="form-group ">
+          <?php if ($_SESSION['role']){
+            echo<<<LABEL
+            <input type="hidden" name="SID" value= {$_SESSION['SID']}>
+            LABEL;
+          } ?>
+            <div class="row">
+              <div class="col-xs-6">
+                <label for="mealname">meal name</label>
+                <input class="form-control" id="mealname" name="mealname" type="text">
+              </div>
             </div>
+            <div class="row" style=" margin-top: 15px;">
+              <div class="col-xs-3">
+                <label for="price">price</label>
+                <input class="form-control" id="price" name="price" type="text">
+              </div>
+              <div class="col-xs-3">
+                <label for="quantity">quantity</label>
+                <input class="form-control" id="quantity" name="quantity" type="text">
+              </div>
+            </div>
+
+            <div class="row" style=" margin-top: 25px;">
+
+              <div class=" col-xs-3">
+                <label for="picture">上傳圖片</label>
+                <input multiple class="file-loading" id="picture" name="file" type="file">
+                <?php
+
+                ?>
+              </div>
+              <div class=" col-xs-3">
+                <button type="submit" class="btn btn-primary" style=" margin-top: 15px;" value="upload">Add</button>
+              </div>
+           </div>
           </div>
-          <div class="row" style=" margin-top: 15px;">
-            <div class="col-xs-3">
-              <label for="ex7">price</label>
-              <input class="form-control" id="ex7" type="text">
-            </div>
-            <div class="col-xs-3">
-              <label for="ex4">quantity</label>
-              <input class="form-control" id="ex4" type="text">
-            </div>
-          </div>
-
-
-          <div class="row" style=" margin-top: 25px;">
-
-            <div class=" col-xs-3">
-              <label for="ex12">上傳圖片</label>
-              <input id="myFile" type="file" name="myFile" multiple class="file-loading">
-
-            </div>
-            <div class=" col-xs-3">
-
-              <button style=" margin-top: 15px;" type="button" class="btn btn-primary">Add</button>
-            </div>
-          </div>
-        </div>
+        </form>
 
         <div class="row">
           <div class="  col-xs-8">
@@ -626,94 +682,73 @@ foreach($srhShop as $shop){
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td><img src="Picture/1.jpg" with="50" heigh="10" alt="Hamburger"></td>
-                  <td>Hamburger</td>
-                
-                  <td>80 </td>
-                  <td>20 </td>
-                  <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#Hamburger-1">
-                  Edit
-                  </button></td>
-                  <!-- Modal -->
-                      <div class="modal fade" id="Hamburger-1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+
+
+              <?php
+                if ($role){
+                  $stmt=$conn->prepare("SELECT * FROM product WHERE SID= '$SID' ");
+                  $stmt->execute();
+                  $cnt = 1;
+                  while ( $product=$stmt->fetch()) {
+                    $PID = $product['PID'];
+                    $picture = $product['picture'];                  
+                    $name = $product['name'];
+                    $price = $product['price'];
+                    $quantity = $product['quantity'];
+                    $img_type= $product['imgType'];
+                    echo<<<LABEL
+                    <tr>
+                      <th scope="row">$cnt</th>
+                      <td><img src="data:$img_type;base64,$picture" /></td>
+                      <td>$name</td>
+                      <td>$price </td>
+                      <td>$quantity </td>
+                      <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#$PID"> Edit</button></td>                     
+                      
+                      <div class="modal fade" id="$PID" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog" role="document">
-                          <div class="modal-content">
+                          
+                         <div class="modal-content">
                             <div class="modal-header">
-                              <h5 class="modal-title" id="staticBackdropLabel">Hamburger Edit</h5>
+                              <h5 class="modal-title" id="staticBackdropLabel">$name Edit</h5>
                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                               </button>
                             </div>
-                            <div class="modal-body">
-                              <div class="row" >
-                                <div class="col-xs-6">
-                                  <label for="ex71">price</label>
-                                  <input class="form-control" id="ex71" type="text">
-                                </div>
-                                <div class="col-xs-6">
-                                  <label for="ex41">quantity</label>
-                                  <input class="form-control" id="ex41" type="text">
-                                </div>
-                              </div>
-                    
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
-                             
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                  <td><button type="button" class="btn btn-danger">Delete</button></td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td><img src="Picture/2.jpg" with="10" heigh="10" alt="coffee"></td>
-                  <td>coffee</td>
-               
-                  <td>50 </td>
-                  <td>20</td>
-                  <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#coffee-1">
-                    Edit
-                    </button></td>
-                    <!-- Modal -->
-                        <div class="modal fade" id="coffee-1" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                          <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="staticBackdropLabel">coffee Edit</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                                </button>
-                              </div>
-                              <div class="modal-body">
-                                <div class="row" >
+                            <form class="form-horizontal" role="form" method="POST" action="prod_edit.py">
+                              <input type="hidden" name="PID" value="$PID"> 
+                              <div class="modal-body">                              
+                                 <div class="row" >
                                   <div class="col-xs-6">
-                                    <label for="ex72">price</label>
-                                    <input class="form-control" id="ex72" type="text">
+                                    <label for="price">price</label>
+                                    <input class="form-control" id="price" name="price" type="text" placeholder="enter price">
                                   </div>
                                   <div class="col-xs-6">
-                                    <label for="ex42">quantity</label>
-                                    <input class="form-control" id="ex42" type="text">
+                                    <label for="quantity">quantity</label>
+                                    <input class="form-control" id="quantity" name="quantity" type="text" placeholder="enter quantity">
                                   </div>
                                 </div>
                       
                               </div>
                               <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Edit</button>
-                               
+                                <button class="btn btn-default btn-primary" type="submit" name="submit">Edit</button>
                               </div>
-                            </div>
+                            </form>
                           </div>
                         </div>
-
-
-                  <td><button type="button" class="btn btn-danger">Delete</button></td>
-                </tr>
-
-              </tbody>
+                      </div>
+                      <form class="form-horizontal" role="form" method="POST" action="prod_del.py">
+                      <input type="hidden" name="PID" value="$PID">
+                      <td><button type="submit" class="btn btn-danger">Delete</button></td>
+                      </form>
+                    </tr>
+                    LABEL;
+                    $cnt++;
+                  }
+                }
+              ?>
+                
+             </tbody>
             </table>
           </div>
 

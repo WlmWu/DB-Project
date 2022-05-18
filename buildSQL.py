@@ -55,9 +55,10 @@ if "__main__":
         PID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         SID int,
         name varchar(20),
-        picture varchar(50),
+        picture longtext,
         price decimal,
         quantity int,
+        imgType varchar(20),
         FOREIGN KEY (SID) REFERENCES store(SID) 
     );
     """
