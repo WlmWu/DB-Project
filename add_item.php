@@ -7,7 +7,7 @@
 ?>
 
 <?php
-if(isset($_FILES["file"]["tmp_name"])){
+if($_FILES["file"]["size"]!=0){
     $file_name=$_FILES["file"]["tmp_name"];
     // resize image
     $maxDim = 100;
