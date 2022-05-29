@@ -57,7 +57,7 @@ except AssertionError as msg:
     popWindow(msg,0)
 
 try:
-    parser=re.compile("[ ]*([0-9]+[.]*[0-9]{0,6})[ ]*") 
+    parser=re.compile("[ ]*([0-9]+[.]*[0-9]*)[ ]*") 
     match=parser.fullmatch(lat)
     if match:
         lat=match.group(0)
@@ -66,7 +66,7 @@ try:
     else:
         assert False, 'Latitude is invalid.'
     
-    parser=re.compile("[ ]*([0-9]+[.]*[0-9]{0,6})[ ]*") 
+    parser=re.compile("[ ]*([0-9]+[.]*[0-9]*)[ ]*") 
     match=parser.fullmatch(lon)
     if match:
         lon=match.group(0)

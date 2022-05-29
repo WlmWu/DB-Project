@@ -5,6 +5,9 @@ if(!isset($_SESSION['account'])){
     $_SESSION['Authenticated']=True;
 }
 $acnt=$_SESSION["account"];
+if(empty($_SESSION['account'])){
+  include("logout.php");
+}
 ?>
 
 <?php
@@ -45,7 +48,7 @@ else{
     $_SESSION['role']=0;
 }
 
-$pattern = "/[0-9]+[.]*[0-9]{0,6} [0-9]+[.]*[0-9]{0,6}/";
+$pattern = "/[0-9]+[.]*[0-9]* [0-9]+[.]*[0-9]*/";
 preg_match($pattern, $data["txtLoc"], $mth);
 $location = explode(' ', $mth[0]);
 $_SESSION['longitude']=$location[0];
@@ -71,7 +74,7 @@ if ($data["role"]){
     $_SESSION['SID']=$data["SID"];	
     $_SESSION['shop_name']=$data["name"];		
     $_SESSION['category']=$data["category"];		
-    $pattern = "/[0-9]+[.]*[0-9]{0,6} [0-9]+[.]*[0-9]{0,6}/";		
+    $pattern = "/[0-9]+[.]*[0-9]* [0-9]+[.]*[0-9]*/";		
     preg_match($pattern, $data["txtLoc"], $mth);		
     $location = explode(' ', $mth[0]);		
     $_SESSION['shop_longitude']=$location[0];		
@@ -208,7 +211,7 @@ function replaceStr($str){
                     edLat=document.getElementById('latitude').value;
                     edLon=document.getElementById('longitude').value;
                     if(edLat!="" && edLon!=""){
-                        const pattern = /[0-9]+[.]*[0-9]{0,6}/;
+                        const pattern = /[0-9]+[.]*[0-9]*/;
                         mthLat=pattern.exec(edLat);
                         mthLon=pattern.exec(edLon);
                         if(mthLon<=180 && mthLon>=-180 && mthLat<=90 && mthLat>=-90){
