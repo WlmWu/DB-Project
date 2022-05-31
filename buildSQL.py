@@ -16,12 +16,12 @@ def connectDb(dbName):
         logging.error('Fail to connection mysql {}'.format(str(e)))
     return None
 
-def createTable(db,tables):
+def createTable(db):
     cursor = db.cursor()
 
     # role = 0 if user
     sql = """
-    CREATE TABLE user (
+    CREATE TABLE IF NOT EXISTS user (
         UID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         account varchar(20) COLLATE utf8mb4_bin,
         password varchar(64),
@@ -32,12 +32,12 @@ def createTable(db,tables):
         wallet int
     );
     """
-    if tables['user']:
-        cursor.execute(sql)
+
+    cursor.execute(sql)
 
 
     sql="""
-    CREATE TABLE store (
+    CREATE TABLE IF NOT EXISTS store (
         SID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         UID int,
         name varchar(30) COLLATE utf8mb4_bin,
@@ -46,12 +46,12 @@ def createTable(db,tables):
         FOREIGN KEY (UID) REFERENCES user(UID) 
     );
     """
-    if tables['store']:
-        cursor.execute(sql)
+
+    cursor.execute(sql)
 
 
     sql="""
-    CREATE TABLE product (
+    CREATE TABLE IF NOT EXISTS product (
         PID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         SID int,
         name varchar(20) COLLATE utf8mb4_bin,
@@ -62,54 +62,57 @@ def createTable(db,tables):
         FOREIGN KEY (SID) REFERENCES store(SID) 
     );
     """
-    if tables['product']:
-        cursor.execute(sql)
 
+    cursor.execute(sql)
 
+    
+    # status: 1: finish/ 0: ~finish/ -1: cancel
+    # category: 0: take out/ 1: delivery
     sql="""
-    CREATE TABLE orders (
+    CREATE TABLE IF NOT EXISTS orders (
         OID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         UID int,
         SID int,
-        status varchar(20),
-        category varchar(20),
+        status int,
+        category boolean,
         start varchar(20),
         end varchar(20),
         amount decimal,
-        distance decimal,
+        distance decimal(10,3),
         FOREIGN KEY (UID) REFERENCES user(UID), 
         FOREIGN KEY (SID) REFERENCES store(SID) 
     );
     """
-    if tables['orders']:
-        cursor.execute(sql)
+
+    cursor.execute(sql)
 
 
     sql="""
-    CREATE TABLE content (
+    CREATE TABLE IF NOT EXISTS content (
         OID int,
         PID int,
         amount int,
         FOREIGN KEY (OID) REFERENCES orders(OID), 
-        FOREIGN KEY (PID) REFERENCES product(PID) 
+        FOREIGN KEY (PID) REFERENCES product(PID) ON DELETE CASCADE
     );
     """
-    if tables['content']:
-        cursor.execute(sql)
 
+    cursor.execute(sql)
 
+    # action: -1: payment/ 0: recharge/ 1: receive/ 2: refund
     sql="""
-    CREATE TABLE transaction (
+    CREATE TABLE IF NOT EXISTS transaction (
         TID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         UID int,
-        action varchar(20),
+        action int,
         amount int,
         time varchar(20),
+        trader varchar(30) COLLATE utf8mb4_bin,
         FOREIGN KEY (UID) REFERENCES user(UID) 
     );
     """
-    if tables['transaction']:
-        cursor.execute(sql)
+
+    cursor.execute(sql)
 
     db.commit()
     
@@ -119,8 +122,7 @@ if "__main__":
     if db is None:
         exit(0)
 
-    create_tables={'user':1,'store':1,'product':1,'orders':1,'content':1,'transaction':1}     # 1 to create, else: 0
-    createTable(db,create_tables)
+    createTable(db)
 
     # end connection
     db.close()

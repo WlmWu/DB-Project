@@ -107,7 +107,7 @@ if valid:
     cursor.execute("SELECT name FROM product WHERE name= %s AND SID = %s", (name, SID))
     rlt = cursor.fetchone()
     if rlt!=None:
-        msg='The product name has been registered.'
+        msg='The product name has existed.'
         popWindow(msg,0)
     else:
         cursor = db.cursor()
