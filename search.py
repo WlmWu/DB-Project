@@ -24,7 +24,7 @@ def connectDb(dbName):
 
 def rtnVal(addr,stores):
     # print(stores)
-    stores=[{'SID':'0','name':'Oops~','categ':'No Shops','dis':'Match!'}] if len(stores)==0 else stores
+    stores=[{'SID':'0','name':'Oops~','categ':'No Shops','dis':'Match!','realDis':'0'}] if len(stores)==0 else stores
     addr='nav.php'
     print('<form action="%s" method="post">'%addr)
     for s in stores:
@@ -33,6 +33,7 @@ def rtnVal(addr,stores):
         print('<input type="hidden" name="srhShopName[]" value="%s">'%s['name'])
         print('<input type="hidden" name="srhShopCat[]" value="%s">'%s['categ'])
         print(f"<input type='hidden' name='srhShopDis[]' value='{s['dis']}'>")
+        print(f"<input type='hidden' name='srhShopRealDis[]' value='{s['realDis']}'>")
     print('</form>')
     print("<script>")
     print("document.getElementsByTagName('form')[0].submit()")
@@ -94,6 +95,7 @@ else:
                 break
         if 'dis' not in tmp:
             tmp['dis']='N/A'
+        tmp['realDis']=row[6]
         stores.append(tmp)
 
     tmp=[]
