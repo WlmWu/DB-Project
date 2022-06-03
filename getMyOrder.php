@@ -36,10 +36,18 @@ ORDER BY o.OID
 $stmt=$conn->prepare($sql);
 $stmt->execute();
 
+echo <<<EOT
+<button class="btn btn-danger" style='margin-top: 20px;' onclick='cancelAll_myOdr()'>Cancel Selected Order</button>
+<form action="myOrder_CancelAll.py" method="post" id="sendAll_myOdr"></form>
+<input type="hidden" name="myOdrTime" value="0" form="sendAll_myOdr">
+<input type="hidden" name="uName" value="$uName" form="sendAll_myOdr">
+EOT;
+
 echo<<<EOT
 <table class="table" style="margin-top: 10px; margin-bottom: 0px;">
     <thead>
     <tr>
+        <th scope="col"></th>
         <th scope="col">Order ID</th>
         <th scope="col">Status</th>
         <th scope="col">Start</th>
@@ -73,8 +81,10 @@ while ($odr=$stmt->fetch()) {
         // array_push($odrs,$tmp);
         $odrs[$oid]=$tmp;
 
+        echo '<tr>';
+        if($oSts=='Not Finished') echo '<td><input type="checkbox" value="'.$oid.'" form="sendAll_myOdr" name="chkBox"></td>';
+        else echo '<td></td>';
         echo<<<EOT
-        <tr>
             <th scope='row'>$oid</th>
             <td>$oSts</td>
             <td>$oStart</td>
@@ -84,14 +94,14 @@ while ($odr=$stmt->fetch()) {
             <td><button type='button' class='btn btn-info' data-toggle='modal' data-target='#o$oid'>Order Details</button></td>
         EOT;
         echo '<td>';
-        if($oSts!='Cancel'){
+        if($oSts=='Not Finished'){
             echo<<<EOT
-                <form  action="cancelOrder.py" method='post'>
-                    <input type="hidden" name="OID" class="btn btn-danger" value="$oid">
-                    <input type="hidden" name="uName" class="btn btn-danger" value='$uName'>
-                    <input type="hidden" name="myOdrTime" value='0'>
-                    <input type="submit" class="btn btn-danger" value="Cancel" onclick='getCurrTime()' />
-                </form>
+                    <form action='cancelOrder.py' method='post' id='sendOne_myOdr_o$oid'></form>
+                    <input type="hidden" name="OID" value="$oid" form='sendOne_myOdr_o$oid'>
+                    <input type="hidden" name="uName" value='$uName' form='sendOne_myOdr_o$oid'>
+                    <input type="hidden" name="myOdrTime" value='0' form='sendOne_myOdr_o$oid'>
+                    <input type="submit" class="btn btn-danger" value="Cancel" onclick='getCurrTime()' form='sendOne_myOdr_o$oid'/>
+                
             EOT;
         }
         echo '</td>';
@@ -100,7 +110,6 @@ while ($odr=$stmt->fetch()) {
 }
 echo '</tbody>';
 echo '</table>';
-
 ?>
 <?php
 

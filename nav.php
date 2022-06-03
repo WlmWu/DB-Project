@@ -164,7 +164,7 @@ function replaceStr($str){
 
     <ul class="nav nav-tabs">
       <li class="active"><a href="#home">Home</a></li>
-      <li><a href="#menu1">shop</a></li>
+      <li><a href="#menu1" onclick="dis_AddProduct()">shop</a></li>
       <li><a href="#myOrder" onclick="getMyOdr()">My Order</a></li>
       <li><a href="#shopOrder" onclick="getShopOdr()">Shop Order</a></li>
       <li><a href="#transRecord" onclick="getTrnsRc()">Transaction Record</a></li>
@@ -294,16 +294,15 @@ function replaceStr($str){
                   console.log(tStr);
                   return tStr;
                 }
-                // construct for getMyOrder.php
-                function getCurrTime(){
-                    btns=document.getElementsByName('myOdrTime')
-                    tStr=getTime();
-                    for(var i=0;i<btns.length;i++){
-                      btns[i].value=tStr;
-                    }
-                    // console.log(btns)
-                }
 
+                function getCurrTime(){
+                  btns=document.getElementsByName('myOdrTime')
+                  tStr=getTime();
+                  for(var i=0;i<btns.length;i++){
+                    btns[i].value=tStr;
+                  }
+                  // console.log(btns)
+                }
             </script>
           </div>
 
@@ -771,7 +770,15 @@ if(isset($srhShop)){
                 ?>
               </div>
               <div class=" col-xs-3">
-                <button type="submit" class="btn btn-primary" style=" margin-top: 15px;" value="upload">Add</button>
+                <button id="addProduct" type="submit" class="btn btn-primary" style=" margin-top: 15px;" value="upload">Add</button>
+                <script>
+                  function dis_AddProduct(){
+                    var role=parseInt(<?php echo $role; ?>);
+                    if(!role){
+                      document.getElementById('addProduct').setAttribute('disabled',true);
+                    }
+                  }
+                </script>
               </div>
            </div>
           </div>
@@ -909,6 +916,12 @@ if(isset($srhShop)){
                 console.log('ERROR')
               }
             });
+          }
+
+          function cancelAll_myOdr(){
+              console.log('ca');
+              getCurrTime();
+              document.getElementById('sendAll_myOdr').submit();
           }
         </script>
       </div>

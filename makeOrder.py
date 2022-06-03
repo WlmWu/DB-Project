@@ -60,9 +60,10 @@ try:
     if walt<amnt:
         assert False, "Balance isn't enough."
     
+    chkAmnt=0
     for i in range(len(pid)):
         sql="""
-        SELECT quantity
+        SELECT quantity,price
         FROM product
         WHERE PID=%s
         """%(pid[i])
@@ -70,11 +71,19 @@ try:
 
         rlt=cursor.fetchone()
         if rlt==None:
-            assert False, "Item doesn't exist."
+            assert False, "Some products don't exist. Please try again"
         
-        inven = rlt[0]
-        if int(inven)<int(quan[i]):
+        inven = int(rlt[0])
+        odrQuan=int(quan[i])
+        if inven<odrQuan:
             assert False, "Inventory isn't enough."
+        else:
+            pPrice=int(rlt[1])
+            chkAmnt+=pPrice*odrQuan
+    
+    chkAmnt+=round(float(dis)*10)
+    if chkAmnt!=amnt:
+        assert False, "The price has changed. Please order again."
     
     valid=1
 except AssertionError as msg:

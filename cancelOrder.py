@@ -48,7 +48,7 @@ sql="""
 cursor.execute(sql)
 sts,uid,sid,odrAmnt = cursor.fetchone()
 
-print(sid)
+
 # sts=1
 msg=''
 if sts==0:
