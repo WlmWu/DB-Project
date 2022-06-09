@@ -80,8 +80,8 @@ try:
         else:
             pPrice=int(rlt[1])
             chkAmnt+=pPrice*odrQuan
-    
-    chkAmnt+=round(float(dis)*10)
+    deliFee=round(float(dis)*10) if round(float(dis)*10)!=0 else 10
+    chkAmnt+=deliFee
     if chkAmnt!=amnt:
         assert False, "The price has changed. Please order again."
     
