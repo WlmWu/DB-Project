@@ -54,7 +54,7 @@ def createTable(db):
     CREATE TABLE IF NOT EXISTS product (
         PID int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         SID int,
-        name varchar(20) COLLATE utf8mb4_bin,
+        name varchar(30) COLLATE utf8mb4_bin,
         picture longtext,
         price decimal,
         quantity int,
