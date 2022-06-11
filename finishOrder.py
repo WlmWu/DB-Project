@@ -33,6 +33,7 @@ uName = form.getvalue('uName')
 tm = form.getvalue('myOdrTime')
 
 
+
 db=connectDb('test') 
 if db is None:
     print('error')
@@ -46,102 +47,66 @@ sql="""
     WHERE OID=%s
     """%(oid)
 cursor.execute(sql)
-sts,uid,sid,odrAmnt = cursor.fetchone()
 
-print(tm)
+sts,uid,sid,odrAmnt = cursor.fetchone()
+print(sts)
+print(uid)
+print(sid)
+print(odrAmnt)
+
 # sts=1
+valid=0
 msg=''
+
 if sts==0:
     # change order status
     sql="""
         UPDATE orders
-        SET status=-1,end='%s'
+        SET status=1
         WHERE OID=%s
-        """%(tm,oid)
+        """%(oid)
     cursor.execute(sql)
 
-
-    # $: shop -> user
-    # shop->$
+    # $: user -> shop
+    # user->$
+    
+    # $->shop
     sql="""
-        SELECT UID,name
+        SELECT UID
         FROM store
         WHERE SID=%s
         """%(sid)
 
     cursor.execute(sql)
-
-    mngrID,sName = cursor.fetchone()
-    mngrID=int(mngrID)
-
-    sql="""
-        INSERT INTO transaction
-        (UID, action, amount, time, trader)
-        VALUES(%s,2,%s,%s,%s)
-        """
-    cursor.execute(sql,[mngrID,-odrAmnt,tm,uName])
-
-
-    # $->user
+    mngrID = int((cursor.fetchone())[0])
+    
     sql="""
         SELECT wallet
         FROM user
-        WHERE UID='%s'
-        """%(uid)
+        WHERE UID=%s
+        """%(mngrID)
 
     cursor.execute(sql)
     waltAmnt = int((cursor.fetchone())[0])
-
+    
     sql="""
         UPDATE user
         SET wallet=%s
         WHERE UID=%s
-        """%(odrAmnt+waltAmnt, uid)
+        """%(odrAmnt+waltAmnt, mngrID)
     cursor.execute(sql)
 
+    # add end time
     sql="""
-        INSERT INTO transaction
-        (UID, action, amount, time, trader)
-        VALUES(%s,2,%s,%s,%s)
-        """
-    cursor.execute(sql,[uid,odrAmnt,tm,sName])
-
-
-    # return inventories
-    sql="""
-        SELECT PID,amount
-        FROM content
+        UPDATE orders
+        SET end=%s
         WHERE OID=%s
-        """%(oid)
-    cursor.execute(sql)
-    rlt = cursor.fetchall()
-    for row in rlt:
-        pid=row[0]
-        quan=row[1]
-        
-        sql="""
-            SELECT quantity
-            FROM product
-            WHERE PID=%s
-            """%(pid)
-        cursor.execute(sql)
-        oriQuan=(cursor.fetchone())
-        # check if product exists
-        if oriQuan==None:
-            continue
+        """
+    cursor.execute(sql,[tm, oid])
 
-        oriQuan=int(oriQuan[0])
-        sql="""
-            UPDATE product
-            SET quantity=%s
-            WHERE PID=%s
-            """%(oriQuan+quan, pid)
-        cursor.execute(sql)
-
-
-    msg='Canceled'
+    msg='Finished'
 else:
-    msg='The order has been finished!'
+    msg='The order has been Canceled!'
 
 popWindow(msg)
 

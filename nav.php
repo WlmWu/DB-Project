@@ -531,23 +531,23 @@ if(isset($srhShop)){
                     <td>$mName</td>
                     <td>$mPric</td>
                     <td>$mQuan</td>
-                    <td><input type="button" name="minus$sid" value="-" onclick="minusItem$uniqFName()"/> <input style="width: 25px" type="text" name="mQuan" id="$sid$mName" value="0" readonly/> <input type="button" name="plus$sid" value="+" onclick="plusItem$uniqFName()"/></td>
+                    <td><input type="button" name="minus$sid" value="-" onclick="minusItem$uniqFName()"/> <input style="width: 25px" type="text" name="mQuan" id="Quan_$uniqFName" value="0" readonly/> <input type="button" name="plus$sid" value="+" onclick="plusItem$uniqFName()"/></td>
                 </tr>
             EOT;
             echo "<input type='hidden' name='mPID' value='$mPID'/>";
             echo<<<EOT
             <script>
             function plusItem$uniqFName(){
-              val=parseInt(document.getElementById('$sid$mName').value);
+              val=parseInt(document.getElementById('Quan_$uniqFName').value);
               calcu$sid($mPric,1);
               val+=1;
-              document.getElementById('$sid$mName').value=val;
+              document.getElementById('Quan_$uniqFName').value=val;
             }
             function minusItem$uniqFName(){
-              val=parseInt(document.getElementById('$sid$mName').value);
+              val=parseInt(document.getElementById('Quan_$uniqFName').value);
               calcu$sid($mPric,((val<=0)?0:-1));
               val=(val<=0)?0:val-1;
-              document.getElementById('$sid$mName').value=val;
+              document.getElementById('Quan_$uniqFName').value=val;
             }
             </script>
             EOT;
