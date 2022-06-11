@@ -96,7 +96,7 @@ for oid in oidArr:
             SET wallet=%s
             WHERE UID=%s
             """%(odrAmnt+waltAmnt, mngrID)
-        cursor.execute(sql)
+        # cursor.execute(sql)
         # add end time
         sql="""
             UPDATE orders
