@@ -21,6 +21,7 @@ def connectDb(dbName):
     return None
 
 def popWindow(msg,is_succ=1):
+    print(msg)
     addr='nav.php' if is_succ else 'nav.php'
     print("<script>")
     print('window.location.href="%s";'%addr)
@@ -61,9 +62,10 @@ try:
         assert False, "Balance isn't enough."
     
     chkAmnt=0
+    insuff_Prod=''
     for i in range(len(pid)):
         sql="""
-        SELECT quantity,price
+        SELECT quantity,price,name
         FROM product
         WHERE PID=%s
         """%(pid[i])
@@ -75,16 +77,26 @@ try:
         
         inven = int(rlt[0])
         odrQuan=int(quan[i])
+        prodName=rlt[2]
         if inven<odrQuan:
-            assert False, "Inventory isn't enough."
+            # assert False, "Inventory isn't enough."
+            insuff_Prod+='\\n'+prodName
         else:
             pPrice=int(rlt[1])
             chkAmnt+=pPrice*odrQuan
     deliFee=round(float(dis)*10)
     chkAmnt+=10 if int(ctgry) and deliFee<10 else deliFee
+
+    if insuff_Prod!='':
+        # insuff_Prod=insuff_Prod[1:len(insuff_Prod)]
+        insuff_Prod=insuff_Prod.replace("'","\\'")
+        insuff_Prod=insuff_Prod.replace('"','\\"')
+        tmpMsg="Following inventories aren't enough: "+insuff_Prod
+        assert False,tmpMsg
+
     if chkAmnt!=amnt:
         assert False, "The price has changed. Please order again."
-    
+
     valid=1
 except AssertionError as msg:
     popWindow(msg)
