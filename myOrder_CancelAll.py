@@ -96,7 +96,7 @@ for oid in oidArr:
             UPDATE user
             SET wallet=%s
             WHERE UID=%s
-            """%(-odrAmnt+waltAmnt, mngrID)
+            """%(mngrWalt-odrAmnt, mngrID)
         cursor.execute(sql)
 
         sql="""
