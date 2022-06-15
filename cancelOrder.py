@@ -48,8 +48,6 @@ sql="""
 cursor.execute(sql)
 sts,uid,sid,odrAmnt = cursor.fetchone()
 
-print(tm)
-# sts=1
 msg=''
 if sts==0:
     # change order status
@@ -62,17 +60,34 @@ if sts==0:
 
 
     # $: shop -> user
-    # shop->$
     sql="""
-        SELECT UID,name
-        FROM store
-        WHERE SID=%s
-        """%(sid)
+        SELECT wallet
+        FROM user
+        WHERE UID='%s'
+        """%(uid)
 
     cursor.execute(sql)
+    waltAmnt = int((cursor.fetchone())[0])
 
-    mngrID,sName = cursor.fetchone()
-    mngrID=int(mngrID)
+    sql="""
+        SELECT u.UID,s.SID,u.name,wallet
+        FROM user as u
+        INNER JOIN store as s
+        ON u.UID = s.UID
+        WHERE s.SID=%s
+        """%(sid)
+    cursor.execute(sql)
+    mngrID,sid,sName,mngrWalt = cursor.fetchone()
+    mngrWalt = int(mngrWalt)
+
+
+    # shop->$
+    sql="""
+        UPDATE user
+        SET wallet=%s
+        WHERE UID=%s
+        """%(mngrWalt-odrAmnt, mngrID)
+    cursor.execute(sql)
 
     sql="""
         INSERT INTO transaction
@@ -83,15 +98,6 @@ if sts==0:
 
 
     # $->user
-    sql="""
-        SELECT wallet
-        FROM user
-        WHERE UID='%s'
-        """%(uid)
-
-    cursor.execute(sql)
-    waltAmnt = int((cursor.fetchone())[0])
-
     sql="""
         UPDATE user
         SET wallet=%s
