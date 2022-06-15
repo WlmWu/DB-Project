@@ -102,6 +102,16 @@ except AssertionError as msg:
     popWindow(msg)
 
 if valid:
+    sql="""
+        SELECT u.UID,s.SID,wallet
+        FROM user as u
+        INNER JOIN store as s
+        ON u.UID = s.UID
+        WHERE s.SID=%s
+        """%(sid)
+    cursor.execute(sql)
+    mngrID,sid,mngrWalt = cursor.fetchone()
+    
     # create an user order
     sql="""
     INSERT INTO orders
@@ -145,19 +155,19 @@ if valid:
 
     # create a manager t_record
     sql="""
-        SELECT UID
-        FROM store
-        WHERE SID=%s
-        """%(sid)
-    cursor.execute(sql)
-    mngrID = (cursor.fetchone())[0]
-
-    sql="""
         INSERT INTO transaction
         (UID, action, amount, time, trader)
         VALUES(%s,1,%s,%s,%s)
         """
     cursor.execute(sql,[mngrID,amnt,tm,name])
+
+    # receive the payment
+    sql="""
+        UPDATE user
+        SET wallet=%s
+        WHERE UID=%s
+        """%(mngrWalt+amnt, mngrID)
+    cursor.execute(sql)
 
     # reduce inventories
     for i in range(len(pid)):

@@ -71,17 +71,33 @@ for oid in oidArr:
 
 
         # $: shop -> user
-        # shop->$
         sql="""
-            SELECT UID,name
-            FROM store
-            WHERE SID=%s
-            """%(sid)
+            SELECT wallet
+            FROM user
+            WHERE UID='%s'
+            """%(uid)
 
         cursor.execute(sql)
+        waltAmnt = int((cursor.fetchone())[0])
 
-        mngrID,sName = cursor.fetchone()
-        mngrID=int(mngrID)
+        sql="""
+            SELECT u.UID,s.SID,u.name,wallet
+            FROM user as u
+            INNER JOIN store as s
+            ON u.UID = s.UID
+            WHERE s.SID=%s
+            """%(sid)
+        cursor.execute(sql)
+        mngrID,sid,sName,mngrWalt = cursor.fetchone()
+
+        # shop->$
+
+        sql="""
+            UPDATE user
+            SET wallet=%s
+            WHERE UID=%s
+            """%(-odrAmnt+waltAmnt, mngrID)
+        cursor.execute(sql)
 
         sql="""
             INSERT INTO transaction
@@ -92,14 +108,6 @@ for oid in oidArr:
 
 
         # $->user
-        sql="""
-            SELECT wallet
-            FROM user
-            WHERE UID='%s'
-            """%(uid)
-
-        cursor.execute(sql)
-        waltAmnt = int((cursor.fetchone())[0])
 
         sql="""
             UPDATE user
