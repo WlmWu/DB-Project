@@ -52,12 +52,14 @@ for oid in oidArr:
     ############################
 
     sql="""
-    SELECT status,UID,SID,amount
-    FROM orders
-    WHERE OID=%s
-    """%(oid)
+        SELECT status,o.UID,o.SID,amount, u.name
+        FROM orders as o
+        INNER JOIN user as u
+        ON u.UID = o.UID
+        WHERE OID=%s;
+        """%(oid)
     cursor.execute(sql)
-    sts,uid,sid,odrAmnt = cursor.fetchone()
+    sts,uid,sid,odrAmnt,uName = cursor.fetchone()
 
     msg=''
     if sts==0:
@@ -81,7 +83,7 @@ for oid in oidArr:
         waltAmnt = int((cursor.fetchone())[0])
 
         sql="""
-            SELECT u.UID,s.SID,u.name,wallet
+            SELECT u.UID,s.SID,s.name,wallet
             FROM user as u
             INNER JOIN store as s
             ON u.UID = s.UID
